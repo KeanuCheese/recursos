@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,28 +7,54 @@
 
   <style>
     :root{
-      --desk:#0b0b0d;
-      --desk2:#0a0a0f;
-      --text:#eaeaf2;
-      --muted:rgba(255,255,255,.65);
-      --line:rgba(255,255,255,.12);
+      /* INTRO (requested RAW) */
+      --intro-bg: url("https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Fondo_intro");
+      --intro-win: url("https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Imagen%20intro");
+
+      /* OS wallpaper (UPDATED requested RAW) */
+      --os-wallpaper: url("https://raw.githubusercontent.com/KeanuCheese/Theme-K/b89546ac5c77afc7d6f8aba43af1cde396caa31c/brokensc-1536x864.jpg");
+
+      /* Win95 palette */
+      --w95-face: #c0c0c0;
+      --w95-title: #000080;
+      --w95-title2: #1084d0;
+      --w95-text: #000;
+      --w95-dark: #000000;
+      --w95-mid: #808080;
+      --w95-light: #ffffff;
+      --w95-hilight: #dfdfdf;
+
       --shadow: 0 18px 60px rgba(0,0,0,.55);
-      --radius: 14px;
       --font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-      --intro-bg: url("https://raw.githubusercontent.com/KeanuCheese/Theme-K/main/descarga%20(3).png");
-      --intro-win: "https://raw.githubusercontent.com/KeanuCheese/Theme-K/main/YWG.jpg";
     }
+
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{
       margin:0;
       font-family: var(--font);
-      background: var(--desk);
-      color: var(--text);
+      background:#0b0b0d;
+      color:#eaeaf2;
       overflow:hidden;
     }
 
-    /* Tumblr hidden elements (present but invisible) */
+    /* =========================================================
+       Tumblr controls: invisible + top-left (requested)
+    ========================================================= */
+    iframe.tmblr-iframe,
+    .tmblr-iframe,
+    .tmblr-iframe--controls,
+    .tmblr-iframe--app{
+      position: fixed !important;
+      top: 8px !important;
+      left: 8px !important;
+      right: auto !important;
+      bottom: auto !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      z-index: 1 !important;
+    }
+
     .tumblr-hidden{
       position:fixed;
       top:0; left:0;
@@ -49,7 +74,7 @@
       align-items:center;
       justify-content:center;
       background-image: var(--intro-bg);
-      background-repeat: repeat;
+      background-repeat: repeat;   /* mosaic */
       background-size: auto;
       background-position: top left;
     }
@@ -59,8 +84,6 @@
       background: rgba(0,0,0,.22);
       pointer-events:none;
     }
-
-    /* modest / medium / centered */
     .introCard{
       position:relative;
       width: min(420px, 72vw);
@@ -79,7 +102,7 @@
       align-items:center;
       justify-content:center;
       padding: 10px;
-      z-index: 2; /* introCard */
+      z-index: 2;
     }
     .introCard img{
       width:100%;
@@ -109,34 +132,21 @@
     }
     .cta.on{ opacity:1; }
 
-    /* =========================================================
-       MOUSE TRAIL (INTRO ONLY) — UPDATED BLOCK (as requested)
-       Replaced ONLY .trailLayer and .trailItem
-    ========================================================= */
+    /* Trail layer (above intro) */
     .trailLayer{
       position:fixed;
       inset:0;
-      z-index: 10001;   /* ABOVE introCard + CTA */
+      z-index: 10001;
       pointer-events:none;
     }
-
     .trailItem{
       position:absolute;
-
-      /* ORIGINAL SIZE (no scaling) */
-      width: auto;
-      height: auto;
-
+      width:auto;
+      height:auto;
       transform: translate(-50%, -50%) rotate(var(--r, 0deg));
-
-      /* Option A: fixed 100% opacity */
       opacity: 1;
-
       filter: drop-shadow(0 10px 18px rgba(0,0,0,.45));
-      image-rendering: auto;
       will-change: transform;
-
-      /* soft limit (optional, but included as safety) */
       max-width: 240px;
       max-height: 240px;
     }
@@ -144,16 +154,16 @@
     .introFadeOut{ animation:introOut .28s linear forwards; }
     @keyframes introOut{ to{ opacity:0; } }
 
-    /* ========================= OS SHELL (no Program Manager) ========================= */
+    /* ========================= OS (NO TOPBAR) ========================= */
     .os{
       position:fixed;
       inset:0;
       opacity:0;
       pointer-events:none;
-      background:
-        radial-gradient(1200px 700px at 18% 18%, rgba(255,255,255,.06), transparent 55%),
-        radial-gradient(900px 600px at 85% 60%, rgba(255,255,255,.05), transparent 55%),
-        linear-gradient(180deg, var(--desk) 0%, var(--desk2) 100%);
+      background-image: var(--os-wallpaper);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
     .osReady{
       opacity:1;
@@ -161,84 +171,81 @@
       transition: opacity .18s linear;
     }
 
-    .topbar{
-      height: 44px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding: 0 14px;
-      border-bottom:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-      backdrop-filter: blur(10px);
-      user-select:none;
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:800;
-      letter-spacing:.2px;
-      font-size:13px;
-    }
-    .brandDot{
-      width:10px;height:10px;border-radius:2px;
-      background: rgba(255,255,255,.88);
-      box-shadow: 0 0 0 3px rgba(255,255,255,.10);
-    }
-    .right{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      color: var(--muted);
-      font-size:12px;
-    }
-
     .desktop{
       position:absolute;
       left:0; right:0;
-      top:44px; bottom:42px;
+      top:0; bottom:42px; /* NO TOPBAR */
       overflow:hidden;
     }
+
+    /* subtle grid optional */
     .grid{
       position:absolute;
       inset:0;
       background-image:
-        linear-gradient(to right, rgba(255,255,255,.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px);
+        linear-gradient(to right, rgba(255,255,255,.10) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,.10) 1px, transparent 1px);
       background-size: 34px 34px;
-      opacity:.22;
+      opacity:.08;
       pointer-events:none;
     }
 
-    .shortcuts{
+    /* ========================= DESKTOP ICONS (Win95-ish) ========================= */
+    .iconsLayer{
       position:absolute;
-      left: 18px;
-      top: 18px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
+      inset:0;
       z-index:2;
     }
-    .shortcut{
-      width: 148px;
+    .deskIcon{
+      position:absolute;
+      width: 78px;
+      padding: 6px 6px 8px;
       display:flex;
+      flex-direction:column;
       align-items:center;
-      gap:10px;
-      padding:10px 10px;
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:14px;
-      background: rgba(255,255,255,.04);
-      cursor:pointer;
+      gap:6px;
       user-select:none;
+      cursor: default;
+      color:#fff;
+      font-family: Tahoma, Verdana, Arial, sans-serif;
+      text-shadow: 0 1px 2px rgba(0,0,0,.6);
     }
-    .shortcut:active{ transform: translateY(1px); }
-    .shortcut .ico{ font-size:18px; }
-    .shortcut .lbl{
-      font-size:12px;
-      color: rgba(255,255,255,.92);
-      line-height:1.1;
+    .deskIcon:active{ cursor: grabbing; }
+    .deskIcon .icoBox{
+      width: 34px;
+      height: 34px;
+      display:grid;
+      place-items:center;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 4px;
+      backdrop-filter: blur(4px);
+    }
+    .deskIcon .lbl{
+      width: 100%;
+      text-align:center;
+      font-size: 12px;
+      line-height: 1.05;
+      white-space: normal;
+      word-break: break-word;
+    }
+    .deskIcon.isSelected{
+      outline: 1px dotted rgba(255,255,255,.85);
+      outline-offset: 2px;
+      background: rgba(0,0,0,.15);
+      border-radius: 6px;
     }
 
+    /* Trash icon extra hint */
+    .deskIcon.isTrash .icoBox{
+      background: rgba(255,255,255,.22);
+      border-color: rgba(255,255,255,.30);
+    }
+    .trashHover{
+      filter: drop-shadow(0 0 14px rgba(255,255,255,.35));
+    }
+
+    /* ========================= TASKBAR (Win95) ========================= */
     .taskbar{
       position:absolute;
       left:0; right:0; bottom:0;
@@ -246,96 +253,172 @@
       display:flex;
       align-items:center;
       gap:8px;
-      padding: 0 10px;
-      border-top:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.06));
-      backdrop-filter: blur(10px);
+      padding: 0 8px;
+      background: var(--w95-face);
+      border-top: 2px solid var(--w95-light);
+      font-family: Tahoma, Verdana, Arial, sans-serif;
+      z-index: 50;
     }
     .start{
       display:flex;
       align-items:center;
-      gap:10px;
-      padding:8px 12px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.20);
+      gap:8px;
+      padding:6px 10px;
+      border-radius:0;
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      background: var(--w95-face);
       cursor:pointer;
       user-select:none;
       font-size:12px;
+      color: #000;
       white-space:nowrap;
     }
+    .start:active{
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      transform: translateY(1px);
+    }
     .start .pill{
-      width:8px;height:8px;border-radius:2px;
-      background: rgba(255,255,255,.88);
+      width:10px;height:10px;border-radius:0;
+      background: #008080;
+      border:1px solid var(--w95-dark);
     }
     .tasks{
       display:flex;
       align-items:center;
-      gap:8px;
+      gap:6px;
       overflow:auto;
-      max-width: 70vw;
+      max-width: 62vw;
       padding: 0 4px;
     }
     .task{
       display:flex;
       align-items:center;
       gap:8px;
-      padding:7px 10px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
+      padding:6px 10px;
+      border-radius:0;
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      background: var(--w95-face);
       font-size:12px;
-      color: rgba(255,255,255,.88);
+      color: #000;
       white-space:nowrap;
       cursor:pointer;
       user-select:none;
-      max-width: 240px;
+      max-width: 260px;
       overflow:hidden;
       text-overflow:ellipsis;
     }
     .task.isActive{
-      background: rgba(255,255,255,.07);
-      border-color: rgba(255,255,255,.18);
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      background: var(--w95-hilight);
     }
     .spacer{ flex:1; }
     .clock{
       font-size:12px;
-      color: var(--muted);
-      padding: 0 6px;
+      color: #000;
+      padding: 0 8px;
+      border: 2px solid;
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      background: var(--w95-hilight);
+      height: 28px;
+      display:flex;
+      align-items:center;
+      white-space:nowrap;
     }
 
-    /* ========================= WINDOWS ========================= */
+    /* ========================= START MENU ========================= */
+    .startMenu{
+      position:absolute;
+      left: 8px;
+      bottom: 44px;
+      width: 240px;
+      background: var(--w95-face);
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      box-shadow: 0 10px 22px rgba(0,0,0,.35);
+      z-index: 60;
+      display:none;
+      font-family: Tahoma, Verdana, Arial, sans-serif;
+      color:#000;
+    }
+    .startMenu.on{ display:block; }
+    .startMenuHeader{
+      height: 42px;
+      background: linear-gradient(180deg, var(--w95-title), var(--w95-title2));
+      color:#fff;
+      display:flex;
+      align-items:center;
+      padding: 0 10px;
+      font-weight:700;
+      font-size: 13px;
+    }
+    .startMenuList{ padding: 6px; }
+    .menuItem{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 8px 8px;
+      cursor:pointer;
+      user-select:none;
+      border: 1px solid transparent;
+    }
+    .menuItem:hover{
+      background: #000080;
+      color:#fff;
+    }
+    .menuIco{
+      width: 22px; height: 22px;
+      display:grid; place-items:center;
+      background: rgba(0,0,0,.08);
+      border: 1px solid rgba(0,0,0,.20);
+    }
+    .menuSep{
+      height:1px;
+      background: rgba(0,0,0,.25);
+      margin: 6px 0;
+    }
+    .menuHint{
+      font-size: 11px;
+      opacity: .75;
+      padding: 6px 8px 10px;
+    }
+
+    /* ========================= WINDOWS (Win95) ========================= */
     .win{
       position:absolute;
       width: min(860px, calc(100vw - 40px));
-      height: min(560px, calc(100vh - 160px));
+      height: min(560px, calc(100vh - 150px));
       left: 180px;
-      top: 90px;
-      border-radius: var(--radius);
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      box-shadow: var(--shadow);
+      top: 70px;
+      border-radius: 0;
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      background: var(--w95-face);
+      box-shadow: none;
       overflow:hidden;
       z-index:5;
-      backdrop-filter: blur(10px);
+      color: #000;
+      font-family: Tahoma, Verdana, Arial, sans-serif;
     }
     .winHeader{
-      height:44px;
+      height: 28px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      padding: 0 10px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.22);
+      padding: 0 6px;
+      border-bottom: 2px solid var(--w95-mid);
+      background: linear-gradient(90deg, var(--w95-title), var(--w95-title2));
       cursor: grab;
       user-select:none;
+      color: #fff;
     }
     .winHeader:active{ cursor: grabbing; }
     .winTitle{
       display:flex;
       align-items:center;
-      gap:10px;
-      font-weight:800;
+      gap:8px;
+      font-weight:700;
       font-size:12px;
       min-width:0;
     }
@@ -343,64 +426,111 @@
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
-      max-width: 50vw;
+      max-width: 52vw;
     }
-    .winBtns{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
+    .winBtns{ display:flex; gap:4px; align-items:center; }
     .btn{
-      width:30px;height:30px;
+      width: 20px;
+      height: 20px;
       display:grid;
       place-items:center;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
-      color: rgba(255,255,255,.90);
+      border-radius: 0;
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      background: var(--w95-face);
+      color: #000;
       cursor:pointer;
       user-select:none;
       font-size:12px;
       line-height:1;
     }
-    .btn:hover{ background: rgba(255,255,255,.08); }
+    .btn:hover{ background: var(--w95-hilight); }
+    .btn:active{
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      transform: translateY(1px);
+    }
     .winBody{
-      height: calc(100% - 44px);
-      background: rgba(0,0,0,.26);
+      height: calc(100% - 28px);
+      background: var(--w95-face);
       overflow:auto;
-      padding: 14px;
+      padding: 12px;
+      color:#000;
     }
     .panel{
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:14px;
-      background: rgba(255,255,255,.03);
-      padding: 12px;
+      border: 2px solid;
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      border-radius:0;
+      background: var(--w95-hilight);
+      padding: 10px;
+      color:#000;
     }
-    .muted{ color: var(--muted); }
-
+    .muted{ color: rgba(0,0,0,.70); }
     .win.max{
-      left: 10px !important;
-      top: 54px !important;
-      width: calc(100vw - 20px) !important;
-      height: calc(100vh - 54px - 52px) !important;
-      border-radius: 16px;
+      left: 8px !important;
+      top: 8px !important;
+      width: calc(100vw - 16px) !important;
+      height: calc(100vh - 8px - 50px) !important; /* leave taskbar */
+      border-radius: 0;
+    }
+
+    /* ========================= Calculator ========================= */
+    .calc{
+      width: min(340px, 92vw);
+      margin: 0 auto;
+      background: var(--w95-face);
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      padding: 10px;
+    }
+    .calcDisplay{
+      width:100%;
+      height: 42px;
+      background: #fff;
+      border: 2px solid;
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      padding: 8px 10px;
+      font-family: "Courier New", monospace;
+      font-size: 18px;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      overflow:hidden;
+    }
+    .calcGrid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .calcBtn{
+      height: 36px;
+      display:grid;
+      place-items:center;
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      background: var(--w95-face);
+      cursor:pointer;
+      user-select:none;
+      font-size: 14px;
+    }
+    .calcBtn:active{
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      transform: translateY(1px);
+    }
+    .calcNote{
+      margin-top: 8px;
+      font-size: 11px;
+      opacity: .75;
     }
 
     @media (max-width: 560px){
-      .introCard{
-        width: 86vw;
-        max-width: 86vw;
-        aspect-ratio: 1 / 1;
-      }
-      .shortcuts{ left: 12px; top: 12px; }
-      .shortcut{ width: 160px; }
       .win{
         left: 10px !important;
         top: 64px !important;
         width: calc(100vw - 20px) !important;
         height: calc(100vh - 64px - 52px) !important;
       }
-      .tasks{ max-width: 55vw; }
+      .tasks{ max-width: 52vw; }
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -430,21 +560,9 @@
 
   <!-- OS -->
   <div id="os" class="os" aria-label="OS">
-    <div class="topbar">
-      <div class="brand">
-        <span class="brandDot"></span>
-        <span>KeanuOS</span>
-      </div>
-      <div class="right">
-        <span class="muted">Keanucheese / Keanu J</span>
-        <span class="muted">|</span>
-        <span id="clock">--:--</span>
-      </div>
-    </div>
-
     <div class="desktop" id="desktop">
       <div class="grid"></div>
-      <div class="shortcuts" id="shortcuts"></div>
+      <div class="iconsLayer" id="iconsLayer"></div>
     </div>
 
     <div class="taskbar">
@@ -454,22 +572,49 @@
       </div>
       <div class="tasks" id="tasks"></div>
       <div class="spacer"></div>
-      <div class="clock muted" id="clock2">--:--</div>
+      <div class="clock" id="clock2">--:--</div>
+    </div>
+
+    <div class="startMenu" id="startMenu" aria-label="Start menu">
+      <div class="startMenuHeader">KeanuOS</div>
+      <div class="startMenuList">
+        <div class="menuItem" data-open="calculator">
+          <div class="menuIco">🧮</div>
+          <div>Calculator</div>
+        </div>
+        <div class="menuItem" data-open="about">
+          <div class="menuIco">📝</div>
+          <div>About</div>
+        </div>
+        <div class="menuSep"></div>
+        <div class="menuItem" data-open="future">
+          <div class="menuIco">⚙️</div>
+          <div>Settings (future)</div>
+        </div>
+        <div class="menuItem" data-open="future2">
+          <div class="menuIco">📁</div>
+          <div>Programs (future)</div>
+        </div>
+      </div>
+      <div class="menuHint">More items can be added later.</div>
     </div>
   </div>
 
   <script>
     /* =========================================================
-      INTRO ASSETS (GitHub RAW)
+      INTRO ASSETS (RAW) — ensure image loads reliably
     ========================================================= */
-    const bgUrl = "https://raw.githubusercontent.com/KeanuCheese/Theme-K/main/descarga%20(3).png";
-    const winUrl = "https://raw.githubusercontent.com/KeanuCheese/Theme-K/main/YWG.jpg";
+    const bgUrl = "https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Fondo_intro";
+    const winUrl = "https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Imagen%20intro";
 
-    // preload
     const p1 = new Image(); p1.src = bgUrl;
     const p2 = new Image(); p2.src = winUrl;
 
-    document.getElementById("introImg").src = winUrl;
+    const introImgEl = document.getElementById("introImg");
+    introImgEl.referrerPolicy = "no-referrer";
+    introImgEl.decoding = "async";
+    introImgEl.loading = "eager";
+    introImgEl.src = winUrl;
 
     const intro = document.getElementById("intro");
     const introCard = document.getElementById("introCard");
@@ -477,25 +622,58 @@
     const os = document.getElementById("os");
     const desktop = document.getElementById("desktop");
     const tasksEl = document.getElementById("tasks");
-    const shortcutsEl = document.getElementById("shortcuts");
+    const iconsLayer = document.getElementById("iconsLayer");
     const trailLayer = document.getElementById("trailLayer");
+    const startBtn = document.getElementById("startBtn");
+    const startMenu = document.getElementById("startMenu");
 
     /* =========================================================
-      MOUSE TRAIL (ONLY BEFORE CONTINUE)
+      MOUSE TRAIL (intro only)
     ========================================================= */
     const TRAIL_GIFS = [
+      /* original gifs */
       "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/QNjlQrkW0KQnOWwOiV/giphy.gif",
       "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/joYZIky213kuTlZMNs/giphy.gif",
       "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/3o7btZKAS8UBpgRb9K/giphy.gif",
       "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/3og0IJa2xGWfhLf7s4/giphy.gif",
       "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/pGskRXx85Qwp2/giphy.gif",
       "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/amBY86NnEamRTF9zyL/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MGx5NWZkN2dtaml4b3kxc3U4bHlvemswYnIxYmNoMGs1dzQxZTMydSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/hYYm7UQZPNXpGNiWZK/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ZjJobWM3ZHFzcW00eXNqM2FuNXlhcmJreWczdjllYzcwemRmY3Y3dyZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/zKgzXCw7OAtSecaGxf/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3NTc1Nm4xb3B4NTVzMmJlMHEyNHZqeDkxZDN4ZHRyaGNjYnZrbDhjbiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/LnpAh48DVOsL9GrGsr/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3czJvNHNmaXFteWloYnRxZnB6OTU2Mncyd2hob2VyOWVmOWtqZmM2diZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/IaEmucjUXslzWt0452/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3a2psOTAxZHRtejdnNWRid2pub3E2NjNobzI0eHRwbHVhaWZsbjZydiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/o5ewxMdlvXouJEN1oM/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3a2psOTAxZHRtejdnNWRid2pub3E2NjNobzI0eHRwbHVhaWZsbjZydiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/7bqaRcQD9v2jPVuL4t/giphy.gif"
+
+      /* ADDED RAW images (requested) */
+      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/a1eb6484394fc2ee14767d4c9be39508fc3a607d/block.jpg",
+      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/Ghost-Machine-_28999.jpg",
+      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/Ghost-Machine-_48454.jpg",
+      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/Ob%C3%A9lix%20Edici%C3%B3n%201%20Coleccionables%20Corral.png",
+      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/Solidarity%20for%20Suckers.png",
+      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/The%20slice%20of%20the%20force.png",
+      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/The-Journey-by-Ricardo-Cavolo-_106.jpg",
+      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/bat_2577.jpg",
+      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/funcat_1234.jpg",
+      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/6a27cbe2fbafc39c55e53ecc04cd1b53cab6069d/boredcat_1264.jpg",
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExanNmYXcxY2ZqYTJnZnlmaXN5a2N6OHhsczAyZG41em00dDBzZ2pjMiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vHcCevWbWkzwk/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExanNmYXcxY2ZqYTJnZnlmaXN5a2N6OHhsczAyZG41em00dDBzZ2pjMiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VKdoCR31r5EYM/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3b2k2bTVzczJhbHBlbWN0ZWVucTRrZXpxaDdzc3JjbnY4aXNtdWNmYiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/2GdACZsbRnTmo/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YWs4dXFkZG44eGtmNGR5eGpydm5oNjR5YjhiczF0dWxveWM0aDVqMSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/W04QVzelTHsNW/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YWs4dXFkZG44eGtmNGR5eGpydm5oNjR5YjhiczF0dWxveWM0aDVqMSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Mkrv6hMDj7kcM/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3d3N5ZTRxODB0aTBkMWEwNnF4NXRvdW9hbTk5bWpqZThzMGxrYWlzOSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/PvKlwYTiKATRe/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3eHIzZmt2NGR0NWIzbDZvdWp0b3FxcWU1MGYwMDZmdm0zZjdvb3VjNSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3GCeasnPeeImI/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bTA4ZTJuc2N6dTFmanN4aGt1cTl6eW80NG9sbW0zdW4yZ3JxbmFhYyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xyr51WobwN8Eo/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bjJxcnFqazd4bXZ2MndpaTF3OXNtZnBpMGdqdnNoZDl4Y3FhdTdpdSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/sytgHDEeDuGWc/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3Y3Z3ODE0Yzg1dzFuZnE1ZDRwZm92YWtvaGlwbGJ0c2hqdmNxbDAwNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/r4O7Pz62SMBnW/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3cDJxZTJjNTA3Mjhra3RpZWE0YXR0ejNsZjduaGZiNm54dW1rN2tseiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/RxR1KghIie2iI/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3cnpoMnMxNDRzNjk2MG5lYW5hNHVlMjFudGNrMzV1anl5b29oZGs5aCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/XYPXQnu0XFqG4/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bXB6anI1YmptNGljcDh1MWdpczk3cnUyeWdwY3A3MHo0bmJ5NGNpeSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/KfOdjTchcDEku203WE/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbG5oeWR0Mzh4bjJ6YWE3emNzeWg4cDMyams5OWR4OWtybnlnYzd3bSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/iT9VW5S66GQqmkBDdH/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3aWViaDg4N3k5N3A3NHVvbm5pbXd0b2hsaXhtNXFydnB5aDNncGY5aCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vCWhA5R2N8E0g/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnkwODdjaGE5dWsxd3Y1Nmt3cWQ0MHN3b2lpODRkNThzNTVweXk4ZCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/OBnwDJW77acLK/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2hxNnZlOWh5N2hpaWk0aDFhanBmcGRlN2xqaWd4MXg5dmtzdno1NSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/dZd2D5Da1954I/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2hxNnZlOWh5N2hpaWk0aDFhanBmcGRlN2xqaWd4MXg5dmtzdno1NSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/ACLCA6bvwBEvC/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeGlkdnNzb3hsNXoya2F2cmZsNHM2enFtdHFiY2w2YTMxM2ZrN3dsbSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/NEKJzG4MCs51K/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3OWRyZDBoaDJoZjF1czUwMTI2NzEzODBtYmM5eDhjZGxmcmNjbHdiaCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/QuUIwH4PqSBq1eyXa2/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjZiNnl2Z2FtZXhxMGt2dW4yMGt0cXEwYzhlcmh0OHk1MWI1aHo1ciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/yhRhIgnJIRD0I/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZG4xNmtrYnh6MjFmcGEycjE1emdob3cyd3NsYjhlc2w1cTlubmx2ZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vqZbsjl4D2wLR0qdqE/giphy.gif",
+      ""
+      
     ];
 
     let trailBag = [];
@@ -522,16 +700,14 @@
       return url;
     }
 
-    refillBag(); // ✅ IMPORTANT: initialize shuffled bag once
+    refillBag();   // ✅ INICIALIZA LA BOLSA ALEATORIA (requested)
 
     const TRAIL_MAX = 220;
-    const TRAIL_COOLDOWN_MS = 1000;
-
+    const TRAIL_COOLDOWN_MS = 350;
     let trailEnabled = true;
     let lastSpawn = 0;
 
     function rand(min, max){ return Math.random() * (max - min) + min; }
-    function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; } // (kept, not used for trail)
 
     function spawnTrail(x, y){
       const now = performance.now();
@@ -543,20 +719,13 @@
       img.loading = "lazy";
       img.decoding = "async";
       img.alt = "";
+      img.src = pickNoRepeat(); // ✅ only pickNoRepeat()
 
-      // Use ONLY pickNoRepeat() for trail
-      img.src = pickNoRepeat();
-
-      // rotation + opacity (NO SIZE - original)
       const r = Math.round(rand(-22, 22));
-      const o = rand(0.9, 1).toFixed(2);
-
       img.style.setProperty("--r", r + "deg");
-      img.style.setProperty("--o", o);
 
       img.style.left = x + "px";
       img.style.top = y + "px";
-
       trailLayer.appendChild(img);
 
       while(trailLayer.children.length > TRAIL_MAX){
@@ -566,15 +735,11 @@
 
     function clearTrail(){ trailLayer.innerHTML = ""; }
 
-    /* =========================================================
-      CTA + TRAIL follow mouse (intro only)
-    ========================================================= */
     function onMove(e){
       if(intro.style.display === "none") return;
       cta.style.left = e.clientX + "px";
       cta.style.top = e.clientY + "px";
       cta.classList.add("on");
-
       if(trailEnabled){
         spawnTrail(e.clientX + rand(-6,6), e.clientY + rand(-6,6));
       }
@@ -597,7 +762,6 @@
       disableTrailForever();
       cta.classList.remove("on");
       intro.classList.add("introFadeOut");
-
       setTimeout(()=>{
         intro.style.display = "none";
         cta.style.display = "none";
@@ -615,18 +779,56 @@
     });
 
     /* =========================================================
-      Clock
+      Clock: Santiago, Chile (America/Santiago) + today's date
     ========================================================= */
+    const CL_TZ = "America/Santiago";
+    const fmt = new Intl.DateTimeFormat("es-CL", {
+      timeZone: CL_TZ,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
+
     function tick(){
-      const d = new Date();
-      const hh = String(d.getHours()).padStart(2,"0");
-      const mm = String(d.getMinutes()).padStart(2,"0");
-      const t = `${hh}:${mm}`;
-      document.getElementById("clock").textContent = t;
+      const t = fmt.format(new Date());
       document.getElementById("clock2").textContent = t;
     }
     tick();
     setInterval(tick, 1000);
+
+    /* =========================================================
+      START MENU
+    ========================================================= */
+    function toggleStartMenu(force){
+      const on = typeof force === "boolean" ? force : !startMenu.classList.contains("on");
+      startMenu.classList.toggle("on", on);
+    }
+
+    startBtn.addEventListener("click", (e)=>{
+      e.stopPropagation();
+      toggleStartMenu();
+    });
+
+    document.addEventListener("mousedown", (e)=>{
+      if(startMenu.classList.contains("on")){
+        const inside = startMenu.contains(e.target) || startBtn.contains(e.target);
+        if(!inside) toggleStartMenu(false);
+      }
+    });
+
+    startMenu.addEventListener("click", (e)=>{
+      const item = e.target.closest(".menuItem");
+      if(!item) return;
+      const id = item.getAttribute("data-open");
+      toggleStartMenu(false);
+      if(id === "calculator") openApp(MODULES.calculator);
+      if(id === "about") openApp(MODULES.about);
+      if(id === "future") openApp(MODULES.future);
+      if(id === "future2") openApp(MODULES.future2);
+    });
 
     /* =========================================================
       MODULES
@@ -639,33 +841,99 @@
         type: "text",
         contentHTML: `
           <div class="panel">
-            <div style="font-weight:900; font-size:13px; margin-bottom:8px;">Keanucheese / Keanu J</div>
-            <div class="muted" style="font-size:12px; line-height:1.65;">
-              Sitio de contacto y hub minimalista. <br><br>
-              Publicaciones, portafolio, colecciones, tienda, servicios. <br><br>
-              (Aquí agregaremos accesos y contenido.)
+            <div style="font-weight:700; font-size:12px; margin-bottom:8px;">Keanucheese / Keanu J</div>
+            <div class="muted" style="font-size:12px; line-height:1.55;">
+              Hub minimalista (Win95).<br><br>
+              Accesos, portafolio, colecciones, tienda, servicios.<br><br>
+              (Aquí agregaremos contenido.)
+            </div>
+          </div>
+        `
+      },
+      calculator: {
+        id: "calculator",
+        title: "Calculator",
+        icon: "🧮",
+        type: "html",
+        contentHTML: `
+          <div class="calc" id="calcRoot">
+            <div class="calcDisplay" id="calcDisplay">0</div>
+            <div class="calcGrid">
+              <div class="calcBtn" data-k="C">C</div>
+              <div class="calcBtn" data-k="⌫">⌫</div>
+              <div class="calcBtn" data-k="%">%</div>
+              <div class="calcBtn" data-k="/">/</div>
+
+              <div class="calcBtn" data-k="7">7</div>
+              <div class="calcBtn" data-k="8">8</div>
+              <div class="calcBtn" data-k="9">9</div>
+              <div class="calcBtn" data-k="*">×</div>
+
+              <div class="calcBtn" data-k="4">4</div>
+              <div class="calcBtn" data-k="5">5</div>
+              <div class="calcBtn" data-k="6">6</div>
+              <div class="calcBtn" data-k="-">-</div>
+
+              <div class="calcBtn" data-k="1">1</div>
+              <div class="calcBtn" data-k="2">2</div>
+              <div class="calcBtn" data-k="3">3</div>
+              <div class="calcBtn" data-k="+">+</div>
+
+              <div class="calcBtn" data-k="0" style="grid-column: span 2;">0</div>
+              <div class="calcBtn" data-k=".">.</div>
+              <div class="calcBtn" data-k="=">=</div>
+            </div>
+            <div class="calcNote">Basic: +, -, ×, ÷, %, backspace.</div>
+          </div>
+        `
+      },
+      recycle: {
+        id: "recycle",
+        title: "Recycle Bin",
+        icon: "🗑️",
+        type: "html",
+        contentHTML: `
+          <div class="panel">
+            <div style="font-weight:700; margin-bottom:8px;">Recycle Bin</div>
+            <div class="muted" style="margin-bottom:10px; font-size:12px;">
+              Items dropped here are hidden from the desktop (not deleted).
+            </div>
+            <div id="trashList" class="panel" style="background:#fff; min-height:140px;"></div>
+            <div class="muted" style="margin-top:10px; font-size:12px;">
+              Tip: click an item to restore it to the desktop.
+            </div>
+          </div>
+        `
+      },
+      future: {
+        id: "future",
+        title: "Settings (future)",
+        icon: "⚙️",
+        type: "text",
+        contentHTML: `
+          <div class="panel">
+            <div style="font-weight:700; margin-bottom:8px;">Settings</div>
+            <div class="muted" style="font-size:12px; line-height:1.55;">
+              Placeholder window for future settings.
+            </div>
+          </div>
+        `
+      },
+      future2: {
+        id: "future2",
+        title: "Programs (future)",
+        icon: "📁",
+        type: "text",
+        contentHTML: `
+          <div class="panel">
+            <div style="font-weight:700; margin-bottom:8px;">Programs</div>
+            <div class="muted" style="font-size:12px; line-height:1.55;">
+              Placeholder menu for future apps.
             </div>
           </div>
         `
       }
     };
-
-    const DESKTOP_SHORTCUTS = [ MODULES.about ];
-
-    function renderShortcuts(){
-      shortcutsEl.innerHTML = "";
-      DESKTOP_SHORTCUTS.forEach(mod=>{
-        const el = document.createElement("div");
-        el.className = "shortcut";
-        el.innerHTML = `<div class="ico">${mod.icon}</div><div class="lbl">${mod.title}</div>`;
-
-        el.addEventListener("dblclick", ()=> openApp(mod));
-        el.addEventListener("click", ()=> openApp(mod));
-
-        shortcutsEl.appendChild(el);
-      });
-    }
-    renderShortcuts();
 
     /* =========================================================
       WINDOW MANAGER
@@ -686,10 +954,8 @@
       headerEl.addEventListener("mousedown", (e)=>{
         if(winEl.classList.contains("max")) return;
         down=true;
-
         const state = openWindows.get(winEl.dataset.id);
         focusWindow(winEl, state ? state.taskEl : null);
-
         sx=e.clientX; sy=e.clientY;
         const r=winEl.getBoundingClientRect();
         sl=r.left; st=r.top;
@@ -699,7 +965,7 @@
         if(!down) return;
         const dx=e.clientX-sx, dy=e.clientY-sy;
         const nl = Math.max(8, Math.min(window.innerWidth - winEl.offsetWidth - 8, sl + dx));
-        const nt = Math.max(54, Math.min(window.innerHeight - winEl.offsetHeight - 52, st + dy));
+        const nt = Math.max(8, Math.min(window.innerHeight - winEl.offsetHeight - 50, st + dy));
         winEl.style.left = nl + "px";
         winEl.style.top = nt + "px";
       }, {passive:true});
@@ -712,7 +978,7 @@
       winEl.className = "win";
       winEl.dataset.id = mod.id;
       winEl.style.left = (140 + Math.floor(Math.random()*120)) + "px";
-      winEl.style.top = (80 + Math.floor(Math.random()*80)) + "px";
+      winEl.style.top = (60 + Math.floor(Math.random()*90)) + "px";
       winEl.style.zIndex = ++zTop;
 
       const header = document.createElement("div");
@@ -720,22 +986,15 @@
       header.innerHTML = `
         <div class="winTitle"><span>${mod.icon}</span><span>${mod.title}</span></div>
         <div class="winBtns">
-          <div class="btn" data-act="min" title="Minimize">—</div>
-          <div class="btn" data-act="max" title="Maximize">▢</div>
+          <div class="btn" data-act="min" title="Minimize">_</div>
+          <div class="btn" data-act="max" title="Maximize">□</div>
           <div class="btn" data-act="close" title="Close">×</div>
         </div>
       `;
 
       const body = document.createElement("div");
       body.className = "winBody";
-
-      if(mod.type === "iframe"){
-        body.style.padding = "0";
-        body.style.overflow = "hidden";
-        body.innerHTML = `<iframe src="${mod.url}" loading="lazy" style="width:100%;height:100%;border:0;"></iframe>`;
-      } else {
-        body.innerHTML = mod.contentHTML || `<div class="panel">Empty module</div>`;
-      }
+      body.innerHTML = mod.contentHTML || `<div class="panel">Empty module</div>`;
 
       winEl.append(header, body);
       desktop.appendChild(winEl);
@@ -767,7 +1026,7 @@
         }
         if(act === "max"){
           const isMax = winEl.classList.toggle("max");
-          btn.textContent = isMax ? "❐" : "▢";
+          btn.textContent = isMax ? "❐" : "□";
           btn.title = isMax ? "Restore" : "Maximize";
           focusWindow(winEl, taskEl);
         }
@@ -784,6 +1043,14 @@
       });
 
       focusWindow(winEl, taskEl);
+
+      if(mod.id === "calculator"){
+        attachCalculatorHandlers(winEl);
+      }
+      if(mod.id === "recycle"){
+        renderTrashList(winEl);
+      }
+
       return winEl;
     }
 
@@ -794,15 +1061,290 @@
         const { winEl, taskEl } = openWindows.get(mod.id);
         winEl.style.display = "block";
         focusWindow(winEl, taskEl);
+        if(mod.id === "recycle") renderTrashList(winEl);
         return;
       }
 
       buildWindow(mod);
     }
 
-    document.getElementById("startBtn").addEventListener("click", ()=>{
-      openApp(MODULES.about);
+    /* =========================================================
+      Desktop icons data + Trash behavior
+    ========================================================= */
+    const ICONS = [
+      { id:"about", label:"About", icon:"📝", open: ()=>openApp(MODULES.about), x: 22, y: 18 },
+      { id:"calculator", label:"Calculator", icon:"🧮", open: ()=>openApp(MODULES.calculator), x: 22, y: 110 },
+      { id:"future", label:"Settings", icon:"⚙️", open: ()=>openApp(MODULES.future), x: 22, y: 202 },
+      { id:"trash", label:"Recycle Bin", icon:"🗑️", open: ()=>openApp(MODULES.recycle), x: 22, y: 300, isTrash:true }
+    ];
+
+    const TRASH = []; // {id,label,icon,restoreX,restoreY}
+
+    function createIconEl(item){
+      const el = document.createElement("div");
+      el.className = "deskIcon" + (item.isTrash ? " isTrash" : "");
+      el.dataset.id = item.id;
+      el.style.left = item.x + "px";
+      el.style.top = item.y + "px";
+      el.innerHTML = `
+        <div class="icoBox" aria-hidden="true">${item.icon}</div>
+        <div class="lbl">${item.label}</div>
+      `;
+
+      let clickTimer = null;
+      el.addEventListener("click", (e)=>{
+        e.stopPropagation();
+        selectIcon(el);
+
+        if(clickTimer){
+          clearTimeout(clickTimer);
+          clickTimer = null;
+          item.open && item.open();
+        } else {
+          clickTimer = setTimeout(()=>{ clickTimer=null; }, 240);
+        }
+      });
+
+      makeIconDraggable(el, item);
+      return el;
+    }
+
+    function selectIcon(el){
+      [...iconsLayer.querySelectorAll(".deskIcon")].forEach(i=>i.classList.remove("isSelected"));
+      el.classList.add("isSelected");
+    }
+
+    document.addEventListener("click", ()=>{
+      [...iconsLayer.querySelectorAll(".deskIcon")].forEach(i=>i.classList.remove("isSelected"));
     });
+
+    function renderIcons(){
+      iconsLayer.innerHTML = "";
+      ICONS.forEach(item=>{
+        if(item.id !== "trash" && TRASH.some(t => t.id === item.id)) return;
+        const el = createIconEl(item);
+        iconsLayer.appendChild(el);
+      });
+    }
+    renderIcons();
+
+    function getTrashEl(){
+      return iconsLayer.querySelector('.deskIcon[data-id="trash"]');
+    }
+
+    function isOverTrash(x, y){
+      const trashEl = getTrashEl();
+      if(!trashEl) return false;
+      const r = trashEl.getBoundingClientRect();
+      return (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom);
+    }
+
+    function makeIconDraggable(el, item){
+      let dragging = false;
+      let offsetX = 0, offsetY = 0;
+
+      const onPointerMove = (e)=>{
+        if(!dragging) return;
+        const x = e.clientX - offsetX;
+        const y = e.clientY - offsetY;
+
+        const deskRect = desktop.getBoundingClientRect();
+        const maxX = deskRect.width - el.offsetWidth - 6;
+        const maxY = deskRect.height - el.offsetHeight - 6;
+
+        const nx = Math.max(6, Math.min(maxX, x));
+        const ny = Math.max(6, Math.min(maxY, y));
+
+        el.style.left = nx + "px";
+        el.style.top = ny + "px";
+
+        const trashEl = getTrashEl();
+        if(trashEl && item.id !== "trash"){
+          const over = isOverTrash(e.clientX, e.clientY);
+          trashEl.classList.toggle("trashHover", over);
+        }
+      };
+
+      const onPointerUp = (e)=>{
+        if(!dragging) return;
+        dragging = false;
+        el.releasePointerCapture(e.pointerId);
+
+        const trashEl = getTrashEl();
+        if(trashEl) trashEl.classList.remove("trashHover");
+
+        if(item.id !== "trash" && isOverTrash(e.clientX, e.clientY)){
+          const rx = parseInt(el.style.left, 10) || item.x;
+          const ry = parseInt(el.style.top, 10) || item.y;
+
+          if(!TRASH.some(t => t.id === item.id)){
+            TRASH.push({ id:item.id, label:item.label, icon:item.icon, restoreX: rx, restoreY: ry });
+          }
+          renderIcons();
+
+          if(openWindows.has("recycle")){
+            const { winEl } = openWindows.get("recycle");
+            renderTrashList(winEl);
+          }
+          return;
+        }
+
+        const nx = parseInt(el.style.left, 10) || item.x;
+        const ny = parseInt(el.style.top, 10) || item.y;
+        item.x = nx; item.y = ny;
+      };
+
+      el.addEventListener("pointerdown", (e)=>{
+        if(e.button !== 0) return;
+        e.stopPropagation();
+        selectIcon(el);
+
+        dragging = true;
+        const r = el.getBoundingClientRect();
+        offsetX = e.clientX - r.left;
+        offsetY = e.clientY - r.top;
+
+        el.setPointerCapture(e.pointerId);
+      });
+
+      el.addEventListener("pointermove", onPointerMove);
+      el.addEventListener("pointerup", onPointerUp);
+      el.addEventListener("pointercancel", onPointerUp);
+    }
+
+    function renderTrashList(winEl){
+      const list = winEl.querySelector("#trashList");
+      if(!list) return;
+
+      if(TRASH.length === 0){
+        list.innerHTML = `<div class="muted" style="font-size:12px;">(Empty)</div>`;
+        return;
+      }
+
+      list.innerHTML = TRASH.map(t => `
+        <div class="menuItem" data-restore="${t.id}" style="border:1px solid rgba(0,0,0,.15); margin:6px 0; background:#fff;">
+          <div class="menuIco" style="background:#f5f5f5;">${t.icon}</div>
+          <div style="display:flex; flex-direction:column; gap:2px;">
+            <div style="font-size:12px; font-weight:700; color:#000;">${t.label}</div>
+            <div class="muted" style="font-size:11px;">Click to restore</div>
+          </div>
+        </div>
+      `).join("");
+
+      list.onclick = (e)=>{
+        const row = e.target.closest("[data-restore]");
+        if(!row) return;
+        const id = row.getAttribute("data-restore");
+        restoreFromTrash(id);
+        renderTrashList(winEl);
+      };
+    }
+
+    function restoreFromTrash(id){
+      const idx = TRASH.findIndex(t => t.id === id);
+      if(idx === -1) return;
+      const t = TRASH.splice(idx, 1)[0];
+
+      const icon = ICONS.find(i => i.id === id);
+      if(icon){
+        icon.x = t.restoreX ?? icon.x;
+        icon.y = t.restoreY ?? icon.y;
+      }
+      renderIcons();
+    }
+
+    /* =========================================================
+      Calculator logic
+    ========================================================= */
+    function attachCalculatorHandlers(winEl){
+      const display = winEl.querySelector("#calcDisplay");
+      const root = winEl.querySelector("#calcRoot");
+      if(!display || !root) return;
+
+      let expr = "";
+      let lastWasEq = false;
+
+      const safeEval = (s)=>{
+        const cleaned = s
+          .replace(/%/g, "/100")
+          .replace(/[^\d+\-*/().\s]/g, "");
+        return Function("return (" + cleaned + ")")();
+      };
+
+      const setDisp = (v)=>{
+        const str = String(v);
+        display.textContent = str.length > 18 ? str.slice(0,18) : str;
+      };
+
+      const press = (k)=>{
+        if(k === "C"){
+          expr = "";
+          lastWasEq = false;
+          setDisp(0);
+          return;
+        }
+        if(k === "⌫"){
+          expr = expr.slice(0, -1);
+          lastWasEq = false;
+          setDisp(expr || 0);
+          return;
+        }
+        if(k === "="){
+          if(!expr) return;
+          try{
+            const res = safeEval(expr);
+            expr = String(res);
+            lastWasEq = true;
+            setDisp(expr);
+          }catch{
+            expr = "";
+            lastWasEq = false;
+            setDisp("Error");
+          }
+          return;
+        }
+
+        const isOp = ["+","-","*","/"].includes(k);
+
+        if(lastWasEq && !isOp){
+          expr = "";
+        }
+        lastWasEq = false;
+
+        if(isOp && expr && ["+","-","*","/"].includes(expr.slice(-1))){
+          expr = expr.slice(0, -1) + k;
+        } else {
+          expr += k;
+        }
+        setDisp(expr);
+      };
+
+      root.addEventListener("click", (e)=>{
+        const b = e.target.closest(".calcBtn");
+        if(!b) return;
+        press(b.getAttribute("data-k"));
+      });
+
+      winEl.addEventListener("keydown", (e)=>{
+        const key = e.key;
+        if((key >= "0" && key <= "9") || ["+","-","*","/","."].includes(key)){
+          press(key);
+          e.preventDefault();
+        } else if(key === "Enter"){
+          press("=");
+          e.preventDefault();
+        } else if(key === "Backspace"){
+          press("⌫");
+          e.preventDefault();
+        } else if(key.toLowerCase() === "c"){
+          press("C");
+          e.preventDefault();
+        } else if(key === "%"){
+          press("%");
+          e.preventDefault();
+        }
+      });
+    }
 
     window.KEANU_OPEN = (id)=>{
       const mod = MODULES[id];
