@@ -1,1425 +1,208 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>{Title}</title>
-
   <style>
     :root{
-      /* INTRO (requested RAW) */
-      --intro-bg: url("https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Fondo_intro");
-      --intro-win: url("https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Imagen%20intro");
+      --intro-bg:url("https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Fondo_intro");
+      --intro-win:url("https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Imagen%20intro");
+      --os-wall:url("https://raw.githubusercontent.com/KeanuCheese/Theme-K/b89546ac5c77afc7d6f8aba43af1cde396caa31c/brokensc-1536x864.jpg");
+      --face:#c0c0c0; --light:#fff; --dark:#000; --mid:#808080; --hilight:#dfdfdf;
+      --title:#000080; --title2:#1084d0;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;overflow:hidden;font-family:Tahoma,Verdana,Arial,sans-serif;background:#111}
+    iframe.tmblr-iframe,.tmblr-iframe{opacity:0!important;pointer-events:none!important}
 
-      /* OS wallpaper (UPDATED requested RAW) */
-      --os-wallpaper: url("https://raw.githubusercontent.com/KeanuCheese/Theme-K/b89546ac5c77afc7d6f8aba43af1cde396caa31c/brokensc-1536x864.jpg");
+    .intro{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1000;background:rgba(0,0,0,.2) var(--intro-bg) repeat}
+    .introCard{width:min(420px,74vw);aspect-ratio:1;border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:8px;background:rgba(0,0,0,.25);cursor:pointer}
+    .introCard img{width:100%;height:100%;object-fit:contain;border-radius:8px}
+    .cta{position:fixed;z-index:1001;padding:7px 10px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;border-radius:999px;pointer-events:none;opacity:0;transform:translate(14px,14px)}
+    .cta.on{opacity:1}
+    .trailLayer{position:fixed;inset:0;z-index:1002;pointer-events:none}
+    .trailItem{position:absolute;max-width:220px;max-height:220px;transform:translate(-50%,-50%) rotate(var(--r));filter:drop-shadow(0 8px 12px rgba(0,0,0,.4))}
 
-      /* Win95 palette */
-      --w95-face: #c0c0c0;
-      --w95-title: #000080;
-      --w95-title2: #1084d0;
-      --w95-text: #000;
-      --w95-dark: #000000;
-      --w95-mid: #808080;
-      --w95-light: #ffffff;
-      --w95-hilight: #dfdfdf;
+    .os{position:fixed;inset:0;background:var(--os-wall) center/cover no-repeat;opacity:0;pointer-events:none}
+    .os.on{opacity:1;pointer-events:auto;transition:opacity .2s linear}
+    .desktop{position:absolute;inset:0 0 58px;overflow:hidden}
+    .icons{position:absolute;inset:0}
+    .deskIcon{position:absolute;width:88px;padding:5px;display:flex;flex-direction:column;gap:6px;align-items:center;color:#fff;text-shadow:0 1px 2px #000;cursor:default;user-select:none}
+    .deskIcon .box{width:36px;height:36px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.18);display:grid;place-items:center;border-radius:4px}
+    .deskIcon .lbl{font-size:12px;text-align:center;line-height:1.1;word-break:break-word}
+    .deskIcon.sel{outline:1px dotted #fff;outline-offset:2px;background:rgba(0,0,0,.2)}
 
-      --shadow: 0 18px 60px rgba(0,0,0,.55);
-      --font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-    }
+    .taskbar{position:absolute;left:0;right:0;bottom:0;height:42px;padding:0 8px;background:var(--face);border-top:2px solid var(--light);display:flex;align-items:center;gap:8px;z-index:80}
+    .start,.task,.clock,.startMenu,.btn,.calcBtn{border:2px solid;border-color:var(--light) var(--dark) var(--dark) var(--light);background:var(--face)}
+    .start{padding:6px 10px;display:flex;gap:8px;align-items:center;cursor:pointer;font-size:12px}
+    .start:active,.task.active,.btn:active,.calcBtn:active{border-color:var(--dark) var(--light) var(--light) var(--dark)}
+    .tasks{display:flex;gap:6px;overflow:auto;max-width:70vw}
+    .task{padding:6px 10px;font-size:12px;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+    .spacer{flex:1}
+    .clock{height:28px;padding:0 9px;display:flex;align-items:center;font-size:12px}
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family: var(--font);
-      background:#0b0b0d;
-      color:#eaeaf2;
-      overflow:hidden;
-    }
+    .startMenu{position:absolute;left:8px;bottom:44px;width:260px;display:none;z-index:90}
+    .startMenu.on{display:block}
+    .smHead{height:40px;padding:0 10px;background:linear-gradient(180deg,var(--title),var(--title2));color:#fff;display:flex;align-items:center;font-weight:700}
+    .smBody{padding:6px}
+    .menuItem{position:relative;padding:8px;display:flex;align-items:center;gap:10px;border:1px solid transparent;font-size:13px;cursor:pointer}
+    .menuItem:hover{background:#000080;color:#fff}
+    .menuSep{height:1px;background:rgba(0,0,0,.3);margin:5px 0}
+    .arrow{margin-left:auto}
 
-    /* =========================================================
-       Tumblr controls: invisible + top-left (requested)
-    ========================================================= */
-    iframe.tmblr-iframe,
-    .tmblr-iframe,
-    .tmblr-iframe--controls,
-    .tmblr-iframe--app{
-      position: fixed !important;
-      top: 8px !important;
-      left: 8px !important;
-      right: auto !important;
-      bottom: auto !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-      z-index: 1 !important;
-    }
+    .win{position:absolute;left:110px;top:70px;width:min(920px,calc(100vw - 24px));height:min(640px,calc(100vh - 88px));background:var(--face);border:2px solid;border-color:var(--light) var(--dark) var(--dark) var(--light);z-index:20;display:flex;flex-direction:column}
+    .win.max{left:6px!important;top:6px!important;width:calc(100vw - 12px)!important;height:calc(100vh - 52px)!important}
+    .head{height:28px;background:linear-gradient(90deg,var(--title),var(--title2));display:flex;align-items:center;justify-content:space-between;color:#fff;padding:0 6px;cursor:grab}
+    .title{display:flex;gap:8px;font-size:12px;font-weight:700;align-items:center;min-width:0}
+    .title span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .btns{display:flex;gap:4px}
+    .btn{width:20px;height:20px;display:grid;place-items:center;cursor:pointer;font-size:12px;color:#000}
+    .body{flex:1;background:var(--face);padding:8px;overflow:auto}
+    .panel{background:#fff;padding:10px;border:2px solid;border-color:var(--dark) var(--light) var(--light) var(--dark);font-size:13px}
+    .embed{width:100%;height:100%;min-height:420px;border:none;background:#000}
+    .tiny{font-size:11px;color:#333}
+    .folderGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+    .entry{display:flex;gap:8px;align-items:flex-start;padding:8px;border:1px solid #b3b3b3;background:#f5f5f5;cursor:pointer}
+    .entry:hover{background:#e7eefb}
 
-    .tumblr-hidden{
-      position:fixed;
-      top:0; left:0;
-      opacity:0;
-      pointer-events:none;
-      width:1px; height:1px;
-      overflow:hidden;
-      z-index:-1;
-    }
-
-    /* ========================= INTRO ========================= */
-    .intro{
-      position:fixed;
-      inset:0;
-      z-index:9999;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background-image: var(--intro-bg);
-      background-repeat: repeat;   /* mosaic */
-      background-size: auto;
-      background-position: top left;
-    }
-    .introShade{
-      position:absolute;
-      inset:0;
-      background: rgba(0,0,0,.22);
-      pointer-events:none;
-    }
-    .introCard{
-      position:relative;
-      width: min(420px, 72vw);
-      aspect-ratio: 1 / 1;
-      max-height: min(420px, 72vw);
-      border-radius: 16px;
-      border:1px solid rgba(255,255,255,.16);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      cursor:pointer;
-      user-select:none;
-      background: rgba(0,0,0,.20);
-      backdrop-filter: blur(8px);
-      outline:none;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 10px;
-      z-index: 2;
-    }
-    .introCard img{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      display:block;
-      border-radius: 12px;
-      background: rgba(0,0,0,.10);
-    }
-
-    /* CTA follows mouse */
-    .cta{
-      position:fixed;
-      z-index:10000;
-      pointer-events:none;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.50);
-      color: rgba(255,255,255,.90);
-      font-size:12px;
-      transform: translate(14px, 14px);
-      backdrop-filter: blur(8px);
-      opacity:0;
-      transition: opacity .12s linear;
-      white-space:nowrap;
-    }
-    .cta.on{ opacity:1; }
-
-    /* Trail layer (above intro) */
-    .trailLayer{
-      position:fixed;
-      inset:0;
-      z-index: 10001;
-      pointer-events:none;
-    }
-    .trailItem{
-      position:absolute;
-      width:auto;
-      height:auto;
-      transform: translate(-50%, -50%) rotate(var(--r, 0deg));
-      opacity: 1;
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,.45));
-      will-change: transform;
-      max-width: 240px;
-      max-height: 240px;
-    }
-
-    .introFadeOut{ animation:introOut .28s linear forwards; }
-    @keyframes introOut{ to{ opacity:0; } }
-
-    /* ========================= OS (NO TOPBAR) ========================= */
-    .os{
-      position:fixed;
-      inset:0;
-      opacity:0;
-      pointer-events:none;
-      background-image: var(--os-wallpaper);
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-    .osReady{
-      opacity:1;
-      pointer-events:auto;
-      transition: opacity .18s linear;
-    }
-
-    .desktop{
-      position:absolute;
-      left:0; right:0;
-      top:0; bottom:42px; /* NO TOPBAR */
-      overflow:hidden;
-    }
-
-    /* subtle grid optional */
-    .grid{
-      position:absolute;
-      inset:0;
-      background-image:
-        linear-gradient(to right, rgba(255,255,255,.10) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,.10) 1px, transparent 1px);
-      background-size: 34px 34px;
-      opacity:.08;
-      pointer-events:none;
-    }
-
-    /* ========================= DESKTOP ICONS (Win95-ish) ========================= */
-    .iconsLayer{
-      position:absolute;
-      inset:0;
-      z-index:2;
-    }
-    .deskIcon{
-      position:absolute;
-      width: 78px;
-      padding: 6px 6px 8px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:6px;
-      user-select:none;
-      cursor: default;
-      color:#fff;
-      font-family: Tahoma, Verdana, Arial, sans-serif;
-      text-shadow: 0 1px 2px rgba(0,0,0,.6);
-    }
-    .deskIcon:active{ cursor: grabbing; }
-    .deskIcon .icoBox{
-      width: 34px;
-      height: 34px;
-      display:grid;
-      place-items:center;
-      background: rgba(255,255,255,.18);
-      border: 1px solid rgba(255,255,255,.22);
-      border-radius: 4px;
-      backdrop-filter: blur(4px);
-    }
-    .deskIcon .lbl{
-      width: 100%;
-      text-align:center;
-      font-size: 12px;
-      line-height: 1.05;
-      white-space: normal;
-      word-break: break-word;
-    }
-    .deskIcon.isSelected{
-      outline: 1px dotted rgba(255,255,255,.85);
-      outline-offset: 2px;
-      background: rgba(0,0,0,.15);
-      border-radius: 6px;
-    }
-
-    /* Trash icon extra hint */
-    .deskIcon.isTrash .icoBox{
-      background: rgba(255,255,255,.22);
-      border-color: rgba(255,255,255,.30);
-    }
-    .trashHover{
-      filter: drop-shadow(0 0 14px rgba(255,255,255,.35));
-    }
-
-    /* ========================= TASKBAR (Win95) ========================= */
-    .taskbar{
-      position:absolute;
-      left:0; right:0; bottom:0;
-      height: 42px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding: 0 8px;
-      background: var(--w95-face);
-      border-top: 2px solid var(--w95-light);
-      font-family: Tahoma, Verdana, Arial, sans-serif;
-      z-index: 50;
-    }
-    .start{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:0;
-      border: 2px solid;
-      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
-      background: var(--w95-face);
-      cursor:pointer;
-      user-select:none;
-      font-size:12px;
-      color: #000;
-      white-space:nowrap;
-    }
-    .start:active{
-      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
-      transform: translateY(1px);
-    }
-    .start .pill{
-      width:10px;height:10px;border-radius:0;
-      background: #008080;
-      border:1px solid var(--w95-dark);
-    }
-    .tasks{
-      display:flex;
-      align-items:center;
-      gap:6px;
-      overflow:auto;
-      max-width: 62vw;
-      padding: 0 4px;
-    }
-    .task{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:0;
-      border: 2px solid;
-      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
-      background: var(--w95-face);
-      font-size:12px;
-      color: #000;
-      white-space:nowrap;
-      cursor:pointer;
-      user-select:none;
-      max-width: 260px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .task.isActive{
-      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
-      background: var(--w95-hilight);
-    }
-    .spacer{ flex:1; }
-    .clock{
-      font-size:12px;
-      color: #000;
-      padding: 0 8px;
-      border: 2px solid;
-      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
-      background: var(--w95-hilight);
-      height: 28px;
-      display:flex;
-      align-items:center;
-      white-space:nowrap;
-    }
-
-    /* ========================= START MENU ========================= */
-    .startMenu{
-      position:absolute;
-      left: 8px;
-      bottom: 44px;
-      width: 240px;
-      background: var(--w95-face);
-      border: 2px solid;
-      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
-      box-shadow: 0 10px 22px rgba(0,0,0,.35);
-      z-index: 60;
-      display:none;
-      font-family: Tahoma, Verdana, Arial, sans-serif;
-      color:#000;
-    }
-    .startMenu.on{ display:block; }
-    .startMenuHeader{
-      height: 42px;
-      background: linear-gradient(180deg, var(--w95-title), var(--w95-title2));
-      color:#fff;
-      display:flex;
-      align-items:center;
-      padding: 0 10px;
-      font-weight:700;
-      font-size: 13px;
-    }
-    .startMenuList{ padding: 6px; }
-    .menuItem{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding: 8px 8px;
-      cursor:pointer;
-      user-select:none;
-      border: 1px solid transparent;
-    }
-    .menuItem:hover{
-      background: #000080;
-      color:#fff;
-    }
-    .menuIco{
-      width: 22px; height: 22px;
-      display:grid; place-items:center;
-      background: rgba(0,0,0,.08);
-      border: 1px solid rgba(0,0,0,.20);
-    }
-    .menuSep{
-      height:1px;
-      background: rgba(0,0,0,.25);
-      margin: 6px 0;
-    }
-    .menuHint{
-      font-size: 11px;
-      opacity: .75;
-      padding: 6px 8px 10px;
-    }
-
-    /* ========================= WINDOWS (Win95) ========================= */
-    .win{
-      position:absolute;
-      width: min(860px, calc(100vw - 40px));
-      height: min(560px, calc(100vh - 150px));
-      left: 180px;
-      top: 70px;
-      border-radius: 0;
-      border: 2px solid;
-      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
-      background: var(--w95-face);
-      box-shadow: none;
-      overflow:hidden;
-      z-index:5;
-      color: #000;
-      font-family: Tahoma, Verdana, Arial, sans-serif;
-    }
-    .winHeader{
-      height: 28px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding: 0 6px;
-      border-bottom: 2px solid var(--w95-mid);
-      background: linear-gradient(90deg, var(--w95-title), var(--w95-title2));
-      cursor: grab;
-      user-select:none;
-      color: #fff;
-    }
-    .winHeader:active{ cursor: grabbing; }
-    .winTitle{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      font-weight:700;
-      font-size:12px;
-      min-width:0;
-    }
-    .winTitle span:last-child{
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      max-width: 52vw;
-    }
-    .winBtns{ display:flex; gap:4px; align-items:center; }
-    .btn{
-      width: 20px;
-      height: 20px;
-      display:grid;
-      place-items:center;
-      border-radius: 0;
-      border: 2px solid;
-      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
-      background: var(--w95-face);
-      color: #000;
-      cursor:pointer;
-      user-select:none;
-      font-size:12px;
-      line-height:1;
-    }
-    .btn:hover{ background: var(--w95-hilight); }
-    .btn:active{
-      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
-      transform: translateY(1px);
-    }
-    .winBody{
-      height: calc(100% - 28px);
-      background: var(--w95-face);
-      overflow:auto;
-      padding: 12px;
-      color:#000;
-    }
-    .panel{
-      border: 2px solid;
-      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
-      border-radius:0;
-      background: var(--w95-hilight);
-      padding: 10px;
-      color:#000;
-    }
-    .muted{ color: rgba(0,0,0,.70); }
-    .win.max{
-      left: 8px !important;
-      top: 8px !important;
-      width: calc(100vw - 16px) !important;
-      height: calc(100vh - 8px - 50px) !important; /* leave taskbar */
-      border-radius: 0;
-    }
-
-    /* ========================= Calculator ========================= */
-    .calc{
-      width: min(340px, 92vw);
-      margin: 0 auto;
-      background: var(--w95-face);
-      border: 2px solid;
-      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
-      padding: 10px;
-    }
-    .calcDisplay{
-      width:100%;
-      height: 42px;
-      background: #fff;
-      border: 2px solid;
-      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
-      padding: 8px 10px;
-      font-family: "Courier New", monospace;
-      font-size: 18px;
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      overflow:hidden;
-    }
-    .calcGrid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .calcBtn{
-      height: 36px;
-      display:grid;
-      place-items:center;
-      border: 2px solid;
-      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
-      background: var(--w95-face);
-      cursor:pointer;
-      user-select:none;
-      font-size: 14px;
-    }
-    .calcBtn:active{
-      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
-      transform: translateY(1px);
-    }
-    .calcNote{
-      margin-top: 8px;
-      font-size: 11px;
-      opacity: .75;
-    }
-
-    @media (max-width: 560px){
-      .win{
-        left: 10px !important;
-        top: 64px !important;
-        width: calc(100vw - 20px) !important;
-        height: calc(100vh - 64px - 52px) !important;
-      }
-      .tasks{ max-width: 52vw; }
-    }
-
-    @media (prefers-reduced-motion: reduce){
-      .introFadeOut{ animation:none; }
-      .osReady{ transition:none; }
-      .cta{ transition:none; }
-    }
+    .footer{position:absolute;left:8px;right:8px;bottom:44px;display:flex;justify-content:center;pointer-events:none;color:#fff;text-shadow:0 1px 2px #000;font-size:12px;z-index:10}
+    @media (max-width:680px){.win{left:8px!important;top:54px!important;width:calc(100vw - 16px)!important;height:calc(100vh - 102px)!important}.tasks{max-width:54vw}}
   </style>
 </head>
-
 <body>
-  <div class="tumblr-hidden">
-    {block:Pagination}{/block:Pagination}
-    {block:Posts}{/block:Posts}
+<div id="intro" class="intro">
+  <div class="trailLayer" id="trail"></div>
+  <div id="introCard" class="introCard" tabindex="0"><img src="https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Imagen%20intro" alt="Intro"/></div>
+</div>
+<div id="cta" class="cta">CLICK TO CONTINUE</div>
+
+<div id="os" class="os" aria-label="KeanuOS">
+  <div class="desktop" id="desktop"><div class="icons" id="icons"></div></div>
+  <div class="footer">Made with love by Keanucheese</div>
+  <div class="taskbar">
+    <div class="start" id="startBtn"><span>🟩</span><span>Start</span></div>
+    <div class="tasks" id="tasks"></div><div class="spacer"></div><div class="clock" id="clock">--:--</div>
   </div>
-
-  <!-- INTRO -->
-  <div id="intro" class="intro" aria-label="Intro">
-    <div class="introShade"></div>
-    <div id="trailLayer" class="trailLayer" aria-hidden="true"></div>
-    <div id="introCard" class="introCard" tabindex="0" role="button" aria-label="Continue">
-      <img id="introImg" alt="Continue window" />
-    </div>
-  </div>
-
-  <div id="cta" class="cta">CLICK TO CONTINUE</div>
-
-  <!-- OS -->
-  <div id="os" class="os" aria-label="OS">
-    <div class="desktop" id="desktop">
-      <div class="grid"></div>
-      <div class="iconsLayer" id="iconsLayer"></div>
-    </div>
-
-    <div class="taskbar">
-      <div class="start" id="startBtn">
-        <span class="pill"></span>
-        <span>Start</span>
-      </div>
-      <div class="tasks" id="tasks"></div>
-      <div class="spacer"></div>
-      <div class="clock" id="clock2">--:--</div>
-    </div>
-
-    <div class="startMenu" id="startMenu" aria-label="Start menu">
-      <div class="startMenuHeader">KeanuOS</div>
-      <div class="startMenuList">
-        <div class="menuItem" data-open="calculator">
-          <div class="menuIco">🧮</div>
-          <div>Calculator</div>
-        </div>
-        <div class="menuItem" data-open="about">
-          <div class="menuIco">📝</div>
-          <div>About</div>
-        </div>
-        <div class="menuSep"></div>
-        <div class="menuItem" data-open="future">
-          <div class="menuIco">⚙️</div>
-          <div>Settings (future)</div>
-        </div>
-        <div class="menuItem" data-open="future2">
-          <div class="menuIco">📁</div>
-          <div>Programs (future)</div>
-        </div>
-      </div>
-      <div class="menuHint">More items can be added later.</div>
+  <div class="startMenu" id="startMenu">
+    <div class="smHead">KeanuOS</div>
+    <div class="smBody">
+      <div class="menuItem" data-open="programs"><span>📂</span><span>Programs</span><span class="arrow">▶</span></div>
+      <div class="menuItem" data-open="documents"><span>📄</span><span>Documents</span></div>
+      <div class="menuItem" data-open="run"><span>🏃</span><span>Run…</span></div>
+      <div class="menuSep"></div>
+      <div class="menuItem" data-open="discord"><span>💬</span><span>Discord</span></div>
+      <div class="menuItem" data-open="tumblr"><span>🌀</span><span>Tumblr</span></div>
+      <div class="menuItem" data-open="skatehive"><span>🛹</span><span>Skatehive</span></div>
+      <div class="menuSep"></div>
+      <div class="menuItem" data-open="shutdown"><span>⏻</span><span>Shutdown</span></div>
     </div>
   </div>
-
-  <script>
-    /* =========================================================
-      INTRO ASSETS (RAW) — ensure image loads reliably
-    ========================================================= */
-    const bgUrl = "https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Fondo_intro";
-    const winUrl = "https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Imagen%20intro";
-
-    const p1 = new Image(); p1.src = bgUrl;
-    const p2 = new Image(); p2.src = winUrl;
-
-    const introImgEl = document.getElementById("introImg");
-    introImgEl.referrerPolicy = "no-referrer";
-    introImgEl.decoding = "async";
-    introImgEl.loading = "eager";
-    introImgEl.src = winUrl;
-
-    const intro = document.getElementById("intro");
-    const introCard = document.getElementById("introCard");
-    const cta = document.getElementById("cta");
-    const os = document.getElementById("os");
-    const desktop = document.getElementById("desktop");
-    const tasksEl = document.getElementById("tasks");
-    const iconsLayer = document.getElementById("iconsLayer");
-    const trailLayer = document.getElementById("trailLayer");
-    const startBtn = document.getElementById("startBtn");
-    const startMenu = document.getElementById("startMenu");
-
-    /* =========================================================
-      MOUSE TRAIL (intro only)
-    ========================================================= */
-    const TRAIL_GIFS = [
- /* original gifs */
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/QNjlQrkW0KQnOWwOiV/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/joYZIky213kuTlZMNs/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/3og0IJa2xGWfhLf7s4/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/pGskRXx85Qwp2/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/amBY86NnEamRTF9zyL/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2puaHNmMmpqMXpvajI5ZTY2dmpuMnkweHF0ODMzeHRid2tqb2t2ZyZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/RhMmGFlRGT1UtgGTaD/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dW0xMjd5NnlzbXR0aDMxd2E5NHV4Z2N6MXJubmU1Z3R6em5lZm9xYSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/KztlbFLLDPx3L61A2x/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bjFpMzUzbWJxNmVoNTM3ZXZmbWsxNDBwcnhhcm5taG8wdmM3YTF1biZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/d7fmqELABC69ejVgf6/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bjFpMzUzbWJxNmVoNTM3ZXZmbWsxNDBwcnhhcm5taG8wdmM3YTF1biZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9dHM/2n3qPNXG92JIOgPWBH/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MmpsMzRpa2czNzZvMmlkZGNqejg5eWFwc2JxdHQxcW56NjduZ3EwcyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l2Sqbracpyp5pHBDy/giphy.gif",
-     "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExanNmYXcxY2ZqYTJnZnlmaXN5a2N6OHhsczAyZG41em00dDBzZ2pjMiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vHcCevWbWkzwk/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExanNmYXcxY2ZqYTJnZnlmaXN5a2N6OHhsczAyZG41em00dDBzZ2pjMiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VKdoCR31r5EYM/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3b2k2bTVzczJhbHBlbWN0ZWVucTRrZXpxaDdzc3JjbnY4aXNtdWNmYiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/2GdACZsbRnTmo/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YWs4dXFkZG44eGtmNGR5eGpydm5oNjR5YjhiczF0dWxveWM0aDVqMSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/W04QVzelTHsNW/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YWs4dXFkZG44eGtmNGR5eGpydm5oNjR5YjhiczF0dWxveWM0aDVqMSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Mkrv6hMDj7kcM/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3d3N5ZTRxODB0aTBkMWEwNnF4NXRvdW9hbTk5bWpqZThzMGxrYWlzOSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/PvKlwYTiKATRe/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3eHIzZmt2NGR0NWIzbDZvdWp0b3FxcWU1MGYwMDZmdm0zZjdvb3VjNSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3GCeasnPeeImI/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bTA4ZTJuc2N6dTFmanN4aGt1cTl6eW80NG9sbW0zdW4yZ3JxbmFhYyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xyr51WobwN8Eo/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bjJxcnFqazd4bXZ2MndpaTF3OXNtZnBpMGdqdnNoZDl4Y3FhdTdpdSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/sytgHDEeDuGWc/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3Y3Z3ODE0Yzg1dzFuZnE1ZDRwZm92YWtvaGlwbGJ0c2hqdmNxbDAwNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/r4O7Pz62SMBnW/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3cDJxZTJjNTA3Mjhra3RpZWE0YXR0ejNsZjduaGZiNm54dW1rN2tseiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/RxR1KghIie2iI/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3cnpoMnMxNDRzNjk2MG5lYW5hNHVlMjFudGNrMzV1anl5b29oZGs5aCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/XYPXQnu0XFqG4/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bXB6anI1YmptNGljcDh1MWdpczk3cnUyeWdwY3A3MHo0bmJ5NGNpeSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/KfOdjTchcDEku203WE/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbG5oeWR0Mzh4bjJ6YWE3emNzeWg4cDMyams5OWR4OWtybnlnYzd3bSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/iT9VW5S66GQqmkBDdH/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3aWViaDg4N3k5N3A3NHVvbm5pbXd0b2hsaXhtNXFydnB5aDNncGY5aCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vCWhA5R2N8E0g/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnkwODdjaGE5dWsxd3Y1Nmt3cWQ0MHN3b2lpODRkNThzNTVweXk4ZCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/OBnwDJW77acLK/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2hxNnZlOWh5N2hpaWk0aDFhanBmcGRlN2xqaWd4MXg5dmtzdno1NSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/dZd2D5Da1954I/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2hxNnZlOWh5N2hpaWk0aDFhanBmcGRlN2xqaWd4MXg5dmtzdno1NSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/ACLCA6bvwBEvC/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeGlkdnNzb3hsNXoya2F2cmZsNHM2enFtdHFiY2w2YTMxM2ZrN3dsbSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/NEKJzG4MCs51K/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3OWRyZDBoaDJoZjF1czUwMTI2NzEzODBtYmM5eDhjZGxmcmNjbHdiaCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/QuUIwH4PqSBq1eyXa2/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjZiNnl2Z2FtZXhxMGt2dW4yMGt0cXEwYzhlcmh0OHk1MWI1aHo1ciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/yhRhIgnJIRD0I/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZG4xNmtrYnh6MjFmcGEycjE1emdob3cyd3NsYjhlc2w1cTlubmx2ZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vqZbsjl4D2wLR0qdqE/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/QNjlQrkW0KQnOWwOiV/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/joYZIky213kuTlZMNs/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/3o7btZKAS8UBpgRb9K/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/3og0IJa2xGWfhLf7s4/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/pGskRXx85Qwp2/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/amBY86NnEamRTF9zyL/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MGx5NWZkN2dtaml4b3kxc3U4bHlvemswYnIxYmNoMGs1dzQxZTMydSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/hYYm7UQZPNXpGNiWZK/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ZjJobWM3ZHFzcW00eXNqM2FuNXlhcmJreWczdjllYzcwemRmY3Y3dyZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/zKgzXCw7OAtSecaGxf/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3NTc1Nm4xb3B4NTVzMmJlMHEyNHZqeDkxZDN4ZHRyaGNjYnZrbDhjbiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/LnpAh48DVOsL9GrGsr/giphy.gif", 
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3czJvNHNmaXFteWloYnRxZnB6OTU2Mncyd2hob2VyOWVmOWtqZmM2diZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/IaEmucjUXslzWt0452/giphy.gif", 
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3a2psOTAxZHRtejdnNWRid2pub3E2NjNobzI0eHRwbHVhaWZsbjZydiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/o5ewxMdlvXouJEN1oM/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3a2psOTAxZHRtejdnNWRid2pub3E2NjNobzI0eHRwbHVhaWZsbjZydiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/7bqaRcQD9v2jPVuL4t/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YmhhcWJydGNmcXhmdDFyaDR5eGR3ZjY1M2l4M2ltemt6eDY3Zm1wNiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/hSRulUogO5D3xysZkY/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bXF2NzRvaTg5a3d0eWFpamt1YWJ5Yzl4ZnZqMmU5Njdvb2k5d3E1ZyZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/ZywW6QMxXaPdKTvyKQ/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bHQ5eTJhOHBpeDZuNWN5a3JhMXA5bnh1OG52eTVxZXFyYzUyOTB3aiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/Xgj6IJT8oUfUfRipdV/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjRwbnUzdzJkMTIwZzhiNXRhcGttZnhvenZubnJtM2gyZjJ1d2llOSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l1L2UkgpuiE4U/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExY3owNGV1dHlsZ2t5bml0MTd3NnVvNWc1MGtjc2RpMjE5MDN1M3hwYSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/uFGvtGgQ4v2IwySX2C/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2o5MXI1ZXczY2U0ZzN4MmJjdjMzNWhnaTk3Ymtvbzh5eDF3emdxciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/igyfXHSWGHZME0PLvr/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2o5MXI1ZXczY2U0ZzN4MmJjdjMzNWhnaTk3Ymtvbzh5eDF3emdxciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/6iqK0cXu38mR0qxyx2/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3Z3VpdHdyY2c5M3FucHh3Y2k3MHg2eDFvMHlqY2x1dDk3ZjZ5bWMzbiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/TgFv7gGhIy1Ne/giphy.gif", 
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3Z3VpdHdyY2c5M3FucHh3Y2k3MHg2eDFvMHlqY2x1dDk3ZjZ5bWMzbiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/12eljpyuTK0fSM/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dWtzYXoxZzI1OHgzMnhrdGtsMXdibnJyMGNnYXB0dXo2cWhyamY5ZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/d3mlE7uhX8KFgEmY/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3aWJ1a2w0dmI4a291cnk5dnpjYWw4cDRiNDB0OTE1N3lhc29lazJwZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/gY9LPsDoysUt2Hlr7b/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExazRvZ2F6cHNxMnVoNnlscWZvZXh0ZzBxcXBuMGVqOXphbGtiOXY1ZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/M1hda8UJewvyev7Etv/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3M2RseWZ4bW91c2FzNmFrdWVpcWs3d3VsazN0YmNpbmNobzcxbnEwZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/yjs4noW0nqYc8/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3M2RseWZ4bW91c2FzNmFrdWVpcWs3d3VsazN0YmNpbmNobzcxbnEwZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/pUeXcg80cO8I8/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3M2RseWZ4bW91c2FzNmFrdWVpcWs3d3VsazN0YmNpbmNobzcxbnEwZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lNMF3DXBSVvlhbME4R/giphy.gif", 
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ZWs5Z2JmZ2VtbnY4Y2phZDAybGFha21nZHc5dHkxbmF0eWRxajB5cSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/kd9BlRovbPOykLBMqX/giphy.gif", 
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ZWs5Z2JmZ2VtbnY4Y2phZDAybGFha21nZHc5dHkxbmF0eWRxajB5cSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/WRQBXSCnEFJIuxktnw/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMTZ6OTFrdWh1bXQwM2dlMWdkcWthemZ6aHpvNzdkZDloZjFrdnlkNyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/nigJhz0tSjM1uQXTFS/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YTM4aGNic3g0NjN2c3FqMHk1bmZpdmw0N2RsYjQ0ZTcxcDlrOG05bSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xUPGcLWt9yLHEA0LUQ/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZW4xdXQ3aDk4MTRwZTF2bG42aGhpOHgxdzhlMGR4eGExZTEyNDcwdCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/gI5SwpUGlNzrPfB1pN/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dzI5eWpkbmwxaWJ5am9qMTUwNnBnY3VuYjJlZm9yYm4zbDRvNmptNSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3otPoQWCdEEkcqvGWA/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeGV4ZDAwMGliMnZ2bnZrNHptMHlqZGdtYXNiejZ3dGpkMTFkd20zMSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3o7qDHfklef99eqvZe/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNm9iOGVlNTU0cnd0bm1tNGI3M3ZyY3Y2dzVnbXcweHowYXl1NGl4aSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/hq7O4BvUNmjLicWaST/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNm9iOGVlNTU0cnd0bm1tNGI3M3ZyY3Y2dzVnbXcweHowYXl1NGl4aSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/ygN59Yayt8tpGxFrB9/giphy.gif",
-      "https://media.giphy.com/media/Z9VEUyLoy8QpWC6DWJ/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZmNlN3Zua2hla3UwdWhibDlrODBldHFka2ZtMDhmamVlcHBmMWowZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/uoOoRxTbyig5b3dTbP/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3dsa2l6YW9nenowbTl2MjR0dHFnZzRnMDhwaGZ4bTdocHFxZHY5ZCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vIvFtVKG0pP7DvK7Bg/giphy.gif", 
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3eXRiN3NiczdkNmZiaTk1MXk4cWMxbGNobmVnajVieG1sOXhzMWlzNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xUPGcF7tleuXOqwNFK/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHgyMG04eHhydGxkMHpsMmhwZ3E3dWE3M2huNWVpOGM4a2ttZDh1NiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/NUwoRZzHc2Bws/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHgyMG04eHhydGxkMHpsMmhwZ3E3dWE3M2huNWVpOGM4a2ttZDh1NiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/1CNsm9ZkHF0m4/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHgyMG04eHhydGxkMHpsMmhwZ3E3dWE3M2huNWVpOGM4a2ttZDh1NiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/1eEv7v51FEI3L54jpr/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3Y2luanpyOXVtcTc3NnBhMDYyOHZuN2ttZ25ubzBjcTkyeXpvY2lwaSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3o7btNhMBytxAM6YBa/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ZTV1ZHNiM3dnb3lzejI1N2I5dzR0enluZHdsYnJyMGt6azh4MWsxZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/fV0oSDsZ4UgdW/giphy.gif", 
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWdhM2pxODN3Y2tkN2JpcnllazlzNzVxZGR5YWI1ajBhMzM4dnMxZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/G6sJqVpD1U4jC/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWdhM2pxODN3Y2tkN2JpcnllazlzNzVxZGR5YWI1ajBhMzM4dnMxZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/sk6yL9EGVeAcE/giphy.gif", 
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MGJtMGE3OWtoMnhkdDNlcTg3ODF1OGptdXdidjlvcDQ1bGd6NTU4byZlcD12MV9naWZzX3NlYXJjaCZjdD1n/iUPjD6Yt1MKIIGZXGv/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaTNkZ2J2NWcwMjMyYXFtN2NkZnB6NGcxZG5hcms5cGVncnFzNG5iaiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/MeAjQkb6XBPk5sKQNi/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXBkM2Y4cmdrMGlzZWo2YTRqMW9kbTRubWRvMXd3MXdhbHZmdXJpZyZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/3oKIP9EDlZKKFX74S4/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MG51c21qandpdzZ5amFlOGh6cnk5azZ3cWU4NzFpdGR6bzk2cnI0aSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/iOa9H3KgfKKWRgjqXx/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNml1cTJodnI2OHllNmoxNHF2eTIybmZ6dDc5ZGJ3ODRqZjQydzY0ZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/se8tmt1xasC9ByWNau/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjcwMnRyN2d0ZzJmaXhkcHRwMm03cWptdDF0N2dwdmp2amZhaW44aSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/yzN9MprGhh4wwTtPLb/giphy.gif", 
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjcwMnRyN2d0ZzJmaXhkcHRwMm03cWptdDF0N2dwdmp2amZhaW44aSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/dB4hcZzRkkgI0mokHH/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2tqeTJhbWJ2eXYzNmtuZGVrZmVsdmYwMW53Z2owNHFlbHNsMGN0diZlcD12MV9naWZzX3NlYXJjaCZjdD1n/YrYuyTbmTxMSFoI1gy/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ZjlndjZ2eHdyNDk0MTlxNDhoeXp4ejhkNHpqNHpxOHBhNTBxd2NzdCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/2E4HOBwYCZFvb0bv6v/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExazkxOGYxNjF5ZW8xMjE4OHdieGRqM3I0bDk4aDFvbmw1MTNxOWZmeiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xinkUUmE1ww5mbOd8E/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExanNmYXcxY2ZqYTJnZnlmaXN5a2N6OHhsczAyZG41em00dDBzZ2pjMiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vHcCevWbWkzwk/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExanNmYXcxY2ZqYTJnZnlmaXN5a2N6OHhsczAyZG41em00dDBzZ2pjMiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VKdoCR31r5EYM/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3b2k2bTVzczJhbHBlbWN0ZWVucTRrZXpxaDdzc3JjbnY4aXNtdWNmYiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/2GdACZsbRnTmo/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YWs4dXFkZG44eGtmNGR5eGpydm5oNjR5YjhiczF0dWxveWM0aDVqMSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/W04QVzelTHsNW/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3NmxsbnBoa2FxYWZraDJ6cW9hMmp3b2Jyd3hrZWJmbzEyZ2pmZmU0YSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/kFTJEiV9nZlhM2juSN/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2puaHNmMmpqMXpvajI5ZTY2dmpuMnkweHF0ODMzeHRid2tqb2t2ZyZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/YOSwXpWj4SV7jBK0mp/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2puaHNmMmpqMXpvajI5ZTY2dmpuMnkweHF0ODMzeHRid2tqb2t2ZyZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/JTPiXVVJKKxaBy3pEs/giphy.gif",
-      "https://media.giphy.com/media/s5WPOoRDh5jrTJapJq/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3NWR2c2M0dmZkeDh2OTY1em9ha3prcTN2NnQ0cHVtN3lqbHAyamh6ZiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/lUZeKq81VSmc6ifBEM/giphy.gif",
-      "
-      
-      /* ADDED RAW images (requested) */
-      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/a1eb6484394fc2ee14767d4c9be39508fc3a607d/block.jpg",
-      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/Ghost-Machine-_28999.jpg",
-      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/Ghost-Machine-_48454.jpg",
-      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/Ob%C3%A9lix%20Edici%C3%B3n%201%20Coleccionables%20Corral.png",
-      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/Solidarity%20for%20Suckers.png",
-      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/The%20slice%20of%20the%20force.png",
-      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/The-Journey-by-Ricardo-Cavolo-_106.jpg",
-      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/bat_2577.jpg",
-      "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/funcat_1234.jpg",
-
-      /* some extra gifs (kept) */
-    ];
-
-    let trailBag = [];
-    let lastTrailUrl = "";
-
-    function refillBag(){
-      trailBag = TRAIL_GIFS.slice();
-      for(let i = trailBag.length - 1; i > 0; i--){
-        const j = Math.floor(Math.random() * (i + 1));
-        [trailBag[i], trailBag[j]] = [trailBag[j], trailBag[i]];
-      }
-    }
-
-    function pickNoRepeat(){
-      if(trailBag.length === 0) refillBag();
-      let url = trailBag.pop();
-
-      if(url === lastTrailUrl && TRAIL_GIFS.length > 1){
-        if(trailBag.length === 0) refillBag();
-        url = trailBag.pop();
-      }
-
-      lastTrailUrl = url;
-      return url;
-    }
-
-    refillBag();   // ✅ INICIALIZA LA BOLSA ALEATORIA (requested)
-
-    const TRAIL_MAX = 220;
-    const TRAIL_COOLDOWN_MS = 350;
-    let trailEnabled = true;
-    let lastSpawn = 0;
-
-    function rand(min, max){ return Math.random() * (max - min) + min; }
-
-    function spawnTrail(x, y){
-      const now = performance.now();
-      if(now - lastSpawn < TRAIL_COOLDOWN_MS) return;
-      lastSpawn = now;
-
-      const img = document.createElement("img");
-      img.className = "trailItem";
-      img.loading = "lazy";
-      img.decoding = "async";
-      img.alt = "";
-      img.src = pickNoRepeat(); // ✅ only pickNoRepeat()
-
-      const r = Math.round(rand(-22, 22));
-      img.style.setProperty("--r", r + "deg");
-
-      img.style.left = x + "px";
-      img.style.top = y + "px";
-      trailLayer.appendChild(img);
-
-      while(trailLayer.children.length > TRAIL_MAX){
-        trailLayer.removeChild(trailLayer.firstChild);
-      }
-    }
-
-    function clearTrail(){ trailLayer.innerHTML = ""; }
-
-    function onMove(e){
-      if(intro.style.display === "none") return;
-      cta.style.left = e.clientX + "px";
-      cta.style.top = e.clientY + "px";
-      cta.classList.add("on");
-      if(trailEnabled){
-        spawnTrail(e.clientX + rand(-6,6), e.clientY + rand(-6,6));
-      }
-    }
-
-    window.addEventListener("mousemove", onMove, {passive:true});
-    window.addEventListener("touchmove", (e)=>{
-      if(!trailEnabled) return;
-      const t = e.touches && e.touches[0];
-      if(!t) return;
-      spawnTrail(t.clientX, t.clientY);
-    }, {passive:true});
-
-    function disableTrailForever(){
-      trailEnabled = false;
-      clearTrail();
-    }
-
-    function showOS(){
-      disableTrailForever();
-      cta.classList.remove("on");
-      intro.classList.add("introFadeOut");
-      setTimeout(()=>{
-        intro.style.display = "none";
-        cta.style.display = "none";
-        os.classList.add("osReady");
-        openApp(MODULES.about);
-      }, 260);
-    }
-
-    introCard.addEventListener("click", showOS);
-    introCard.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter" || e.key === " "){
-        e.preventDefault();
-        showOS();
-      }
-    });
-
-    /* =========================================================
-      Clock: Santiago, Chile (America/Santiago) + today's date
-    ========================================================= */
-    const CL_TZ = "America/Santiago";
-    const fmt = new Intl.DateTimeFormat("es-CL", {
-      timeZone: CL_TZ,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
-    });
-
-    function tick(){
-      const t = fmt.format(new Date());
-      document.getElementById("clock2").textContent = t;
-    }
-    tick();
-    setInterval(tick, 1000);
-
-    /* =========================================================
-      START MENU
-    ========================================================= */
-    function toggleStartMenu(force){
-      const on = typeof force === "boolean" ? force : !startMenu.classList.contains("on");
-      startMenu.classList.toggle("on", on);
-    }
-
-    startBtn.addEventListener("click", (e)=>{
-      e.stopPropagation();
-      toggleStartMenu();
-    });
-
-    document.addEventListener("mousedown", (e)=>{
-      if(startMenu.classList.contains("on")){
-        const inside = startMenu.contains(e.target) || startBtn.contains(e.target);
-        if(!inside) toggleStartMenu(false);
-      }
-    });
-
-    startMenu.addEventListener("click", (e)=>{
-      const item = e.target.closest(".menuItem");
-      if(!item) return;
-      const id = item.getAttribute("data-open");
-      toggleStartMenu(false);
-      if(id === "calculator") openApp(MODULES.calculator);
-      if(id === "about") openApp(MODULES.about);
-      if(id === "future") openApp(MODULES.future);
-      if(id === "future2") openApp(MODULES.future2);
-    });
-
-    /* =========================================================
-      MODULES
-    ========================================================= */
-    const MODULES = {
-      about: {
-        id: "about",
-        title: "about.txt",
-        icon: "📝",
-        type: "text",
-        contentHTML: `
-          <div class="panel">
-            <div style="font-weight:700; font-size:12px; margin-bottom:8px;">Keanucheese / Keanu J</div>
-            <div class="muted" style="font-size:12px; line-height:1.55;">
-              Hub minimalista (Win95).<br><br>
-              Accesos, portafolio, colecciones, tienda, servicios.<br><br>
-              (Aquí agregaremos contenido.)
-            </div>
-          </div>
-        `
-      },
-      calculator: {
-        id: "calculator",
-        title: "Calculator",
-        icon: "🧮",
-        type: "html",
-        contentHTML: `
-          <div class="calc" id="calcRoot">
-            <div class="calcDisplay" id="calcDisplay">0</div>
-            <div class="calcGrid">
-              <div class="calcBtn" data-k="C">C</div>
-              <div class="calcBtn" data-k="⌫">⌫</div>
-              <div class="calcBtn" data-k="%">%</div>
-              <div class="calcBtn" data-k="/">/</div>
-
-              <div class="calcBtn" data-k="7">7</div>
-              <div class="calcBtn" data-k="8">8</div>
-              <div class="calcBtn" data-k="9">9</div>
-              <div class="calcBtn" data-k="*">×</div>
-
-              <div class="calcBtn" data-k="4">4</div>
-              <div class="calcBtn" data-k="5">5</div>
-              <div class="calcBtn" data-k="6">6</div>
-              <div class="calcBtn" data-k="-">-</div>
-
-              <div class="calcBtn" data-k="1">1</div>
-              <div class="calcBtn" data-k="2">2</div>
-              <div class="calcBtn" data-k="3">3</div>
-              <div class="calcBtn" data-k="+">+</div>
-
-              <div class="calcBtn" data-k="0" style="grid-column: span 2;">0</div>
-              <div class="calcBtn" data-k=".">.</div>
-              <div class="calcBtn" data-k="=">=</div>
-            </div>
-            <div class="calcNote">Basic: +, -, ×, ÷, %, backspace.</div>
-          </div>
-        `
-      },
-      recycle: {
-        id: "recycle",
-        title: "Recycle Bin",
-        icon: "🗑️",
-        type: "html",
-        contentHTML: `
-          <div class="panel">
-            <div style="font-weight:700; margin-bottom:8px;">Recycle Bin</div>
-            <div class="muted" style="margin-bottom:10px; font-size:12px;">
-              Items dropped here are hidden from the desktop (not deleted).
-            </div>
-            <div id="trashList" class="panel" style="background:#fff; min-height:140px;"></div>
-            <div class="muted" style="margin-top:10px; font-size:12px;">
-              Tip: click an item to restore it to the desktop.
-            </div>
-          </div>
-        `
-      },
-      future: {
-        id: "future",
-        title: "Settings (future)",
-        icon: "⚙️",
-        type: "text",
-        contentHTML: `
-          <div class="panel">
-            <div style="font-weight:700; margin-bottom:8px;">Settings</div>
-            <div class="muted" style="font-size:12px; line-height:1.55;">
-              Placeholder window for future settings.
-            </div>
-          </div>
-        `
-      },
-      future2: {
-        id: "future2",
-        title: "Programs (future)",
-        icon: "📁",
-        type: "text",
-        contentHTML: `
-          <div class="panel">
-            <div style="font-weight:700; margin-bottom:8px;">Programs</div>
-            <div class="muted" style="font-size:12px; line-height:1.55;">
-              Placeholder menu for future apps.
-            </div>
-          </div>
-        `
-      }
-    };
-
-    /* =========================================================
-      WINDOW MANAGER
-    ========================================================= */
-    let zTop = 20;
-    const openWindows = new Map();
-
-    function focusWindow(winEl, taskEl){
-      zTop += 1;
-      winEl.style.zIndex = zTop;
-      [...tasksEl.querySelectorAll(".task")].forEach(t => t.classList.remove("isActive"));
-      if(taskEl) taskEl.classList.add("isActive");
-    }
-
-    function makeDraggable(winEl, headerEl){
-      let down=false, sx=0, sy=0, sl=0, st=0;
-
-      headerEl.addEventListener("mousedown", (e)=>{
-        if(winEl.classList.contains("max")) return;
-        down=true;
-        const state = openWindows.get(winEl.dataset.id);
-        focusWindow(winEl, state ? state.taskEl : null);
-        sx=e.clientX; sy=e.clientY;
-        const r=winEl.getBoundingClientRect();
-        sl=r.left; st=r.top;
-      });
-
-      window.addEventListener("mousemove", (e)=>{
-        if(!down) return;
-        const dx=e.clientX-sx, dy=e.clientY-sy;
-        const nl = Math.max(8, Math.min(window.innerWidth - winEl.offsetWidth - 8, sl + dx));
-        const nt = Math.max(8, Math.min(window.innerHeight - winEl.offsetHeight - 50, st + dy));
-        winEl.style.left = nl + "px";
-        winEl.style.top = nt + "px";
-      }, {passive:true});
-
-      window.addEventListener("mouseup", ()=> down=false);
-    }
-
-    function buildWindow(mod){
-      const winEl = document.createElement("div");
-      winEl.className = "win";
-      winEl.dataset.id = mod.id;
-      winEl.style.left = (140 + Math.floor(Math.random()*120)) + "px";
-      winEl.style.top = (60 + Math.floor(Math.random()*90)) + "px";
-      winEl.style.zIndex = ++zTop;
-
-      const header = document.createElement("div");
-      header.className = "winHeader";
-      header.innerHTML = `
-        <div class="winTitle"><span>${mod.icon}</span><span>${mod.title}</span></div>
-        <div class="winBtns">
-          <div class="btn" data-act="min" title="Minimize">_</div>
-          <div class="btn" data-act="max" title="Maximize">□</div>
-          <div class="btn" data-act="close" title="Close">×</div>
-        </div>
-      `;
-
-      const body = document.createElement("div");
-      body.className = "winBody";
-      body.innerHTML = mod.contentHTML || `<div class="panel">Empty module</div>`;
-
-      winEl.append(header, body);
-      desktop.appendChild(winEl);
-
-      const taskEl = document.createElement("div");
-      taskEl.className = "task isActive";
-      taskEl.textContent = mod.title;
-      tasksEl.appendChild(taskEl);
-
-      openWindows.set(mod.id, { winEl, taskEl });
-
-      makeDraggable(winEl, header);
-
-      winEl.addEventListener("mousedown", ()=> focusWindow(winEl, taskEl));
-      taskEl.addEventListener("click", ()=>{
-        if(winEl.style.display === "none") winEl.style.display = "block";
-        focusWindow(winEl, taskEl);
-      });
-
-      header.addEventListener("click", (e)=>{
-        const btn = e.target.closest(".btn");
-        if(!btn) return;
-
-        const act = btn.getAttribute("data-act");
-
-        if(act === "min"){
-          winEl.style.display = "none";
-          taskEl.classList.remove("isActive");
-        }
-        if(act === "max"){
-          const isMax = winEl.classList.toggle("max");
-          btn.textContent = isMax ? "❐" : "□";
-          btn.title = isMax ? "Restore" : "Maximize";
-          focusWindow(winEl, taskEl);
-        }
-        if(act === "close"){
-          winEl.remove();
-          taskEl.remove();
-          openWindows.delete(mod.id);
-        }
-      });
-
-      header.addEventListener("dblclick", ()=>{
-        const maxBtn = header.querySelector('[data-act="max"]');
-        if(maxBtn) maxBtn.click();
-      });
-
-      focusWindow(winEl, taskEl);
-
-      if(mod.id === "calculator"){
-        attachCalculatorHandlers(winEl);
-      }
-      if(mod.id === "recycle"){
-        renderTrashList(winEl);
-      }
-
-      return winEl;
-    }
-
-    function openApp(mod){
-      if(!mod) return;
-
-      if(openWindows.has(mod.id)){
-        const { winEl, taskEl } = openWindows.get(mod.id);
-        winEl.style.display = "block";
-        focusWindow(winEl, taskEl);
-        if(mod.id === "recycle") renderTrashList(winEl);
-        return;
-      }
-
-      buildWindow(mod);
-    }
-
-    /* =========================================================
-      Desktop icons data + Trash behavior
-    ========================================================= */
-    const ICONS = [
-      { id:"about", label:"About", icon:"📝", open: ()=>openApp(MODULES.about), x: 22, y: 18 },
-      { id:"calculator", label:"Calculator", icon:"🧮", open: ()=>openApp(MODULES.calculator), x: 22, y: 110 },
-      { id:"future", label:"Settings", icon:"⚙️", open: ()=>openApp(MODULES.future), x: 22, y: 202 },
-      { id:"trash", label:"Recycle Bin", icon:"🗑️", open: ()=>openApp(MODULES.recycle), x: 22, y: 300, isTrash:true }
-    ];
-
-    const TRASH = []; // {id,label,icon,restoreX,restoreY}
-
-    function createIconEl(item){
-      const el = document.createElement("div");
-      el.className = "deskIcon" + (item.isTrash ? " isTrash" : "");
-      el.dataset.id = item.id;
-      el.style.left = item.x + "px";
-      el.style.top = item.y + "px";
-      el.innerHTML = `
-        <div class="icoBox" aria-hidden="true">${item.icon}</div>
-        <div class="lbl">${item.label}</div>
-      `;
-
-      let clickTimer = null;
-      el.addEventListener("click", (e)=>{
-        e.stopPropagation();
-        selectIcon(el);
-
-        if(clickTimer){
-          clearTimeout(clickTimer);
-          clickTimer = null;
-          item.open && item.open();
-        } else {
-          clickTimer = setTimeout(()=>{ clickTimer=null; }, 240);
-        }
-      });
-
-      makeIconDraggable(el, item);
-      return el;
-    }
-
-    function selectIcon(el){
-      [...iconsLayer.querySelectorAll(".deskIcon")].forEach(i=>i.classList.remove("isSelected"));
-      el.classList.add("isSelected");
-    }
-
-    document.addEventListener("click", ()=>{
-      [...iconsLayer.querySelectorAll(".deskIcon")].forEach(i=>i.classList.remove("isSelected"));
-    });
-
-    function renderIcons(){
-      iconsLayer.innerHTML = "";
-      ICONS.forEach(item=>{
-        if(item.id !== "trash" && TRASH.some(t => t.id === item.id)) return;
-        const el = createIconEl(item);
-        iconsLayer.appendChild(el);
-      });
-    }
-    renderIcons();
-
-    function getTrashEl(){
-      return iconsLayer.querySelector('.deskIcon[data-id="trash"]');
-    }
-
-    function isOverTrash(x, y){
-      const trashEl = getTrashEl();
-      if(!trashEl) return false;
-      const r = trashEl.getBoundingClientRect();
-      return (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom);
-    }
-
-    function makeIconDraggable(el, item){
-      let dragging = false;
-      let offsetX = 0, offsetY = 0;
-
-      const onPointerMove = (e)=>{
-        if(!dragging) return;
-        const x = e.clientX - offsetX;
-        const y = e.clientY - offsetY;
-
-        const deskRect = desktop.getBoundingClientRect();
-        const maxX = deskRect.width - el.offsetWidth - 6;
-        const maxY = deskRect.height - el.offsetHeight - 6;
-
-        const nx = Math.max(6, Math.min(maxX, x));
-        const ny = Math.max(6, Math.min(maxY, y));
-
-        el.style.left = nx + "px";
-        el.style.top = ny + "px";
-
-        const trashEl = getTrashEl();
-        if(trashEl && item.id !== "trash"){
-          const over = isOverTrash(e.clientX, e.clientY);
-          trashEl.classList.toggle("trashHover", over);
-        }
-      };
-
-      const onPointerUp = (e)=>{
-        if(!dragging) return;
-        dragging = false;
-        el.releasePointerCapture(e.pointerId);
-
-        const trashEl = getTrashEl();
-        if(trashEl) trashEl.classList.remove("trashHover");
-
-        if(item.id !== "trash" && isOverTrash(e.clientX, e.clientY)){
-          const rx = parseInt(el.style.left, 10) || item.x;
-          const ry = parseInt(el.style.top, 10) || item.y;
-
-          if(!TRASH.some(t => t.id === item.id)){
-            TRASH.push({ id:item.id, label:item.label, icon:item.icon, restoreX: rx, restoreY: ry });
-          }
-          renderIcons();
-
-          if(openWindows.has("recycle")){
-            const { winEl } = openWindows.get("recycle");
-            renderTrashList(winEl);
-          }
-          return;
-        }
-
-        const nx = parseInt(el.style.left, 10) || item.x;
-        const ny = parseInt(el.style.top, 10) || item.y;
-        item.x = nx; item.y = ny;
-      };
-
-      el.addEventListener("pointerdown", (e)=>{
-        if(e.button !== 0) return;
-        e.stopPropagation();
-        selectIcon(el);
-
-        dragging = true;
-        const r = el.getBoundingClientRect();
-        offsetX = e.clientX - r.left;
-        offsetY = e.clientY - r.top;
-
-        el.setPointerCapture(e.pointerId);
-      });
-
-      el.addEventListener("pointermove", onPointerMove);
-      el.addEventListener("pointerup", onPointerUp);
-      el.addEventListener("pointercancel", onPointerUp);
-    }
-
-    function renderTrashList(winEl){
-      const list = winEl.querySelector("#trashList");
-      if(!list) return;
-
-      if(TRASH.length === 0){
-        list.innerHTML = `<div class="muted" style="font-size:12px;">(Empty)</div>`;
-        return;
-      }
-
-      list.innerHTML = TRASH.map(t => `
-        <div class="menuItem" data-restore="${t.id}" style="border:1px solid rgba(0,0,0,.15); margin:6px 0; background:#fff;">
-          <div class="menuIco" style="background:#f5f5f5;">${t.icon}</div>
-          <div style="display:flex; flex-direction:column; gap:2px;">
-            <div style="font-size:12px; font-weight:700; color:#000;">${t.label}</div>
-            <div class="muted" style="font-size:11px;">Click to restore</div>
-          </div>
-        </div>
-      `).join("");
-
-      list.onclick = (e)=>{
-        const row = e.target.closest("[data-restore]");
-        if(!row) return;
-        const id = row.getAttribute("data-restore");
-        restoreFromTrash(id);
-        renderTrashList(winEl);
-      };
-    }
-
-    function restoreFromTrash(id){
-      const idx = TRASH.findIndex(t => t.id === id);
-      if(idx === -1) return;
-      const t = TRASH.splice(idx, 1)[0];
-
-      const icon = ICONS.find(i => i.id === id);
-      if(icon){
-        icon.x = t.restoreX ?? icon.x;
-        icon.y = t.restoreY ?? icon.y;
-      }
-      renderIcons();
-    }
-
-    /* =========================================================
-      Calculator logic
-    ========================================================= */
-    function attachCalculatorHandlers(winEl){
-      const display = winEl.querySelector("#calcDisplay");
-      const root = winEl.querySelector("#calcRoot");
-      if(!display || !root) return;
-
-      let expr = "";
-      let lastWasEq = false;
-
-      const safeEval = (s)=>{
-        const cleaned = s
-          .replace(/%/g, "/100")
-          .replace(/[^\d+\-*/().\s]/g, "");
-        return Function("return (" + cleaned + ")")();
-      };
-
-      const setDisp = (v)=>{
-        const str = String(v);
-        display.textContent = str.length > 18 ? str.slice(0,18) : str;
-      };
-
-      const press = (k)=>{
-        if(k === "C"){
-          expr = "";
-          lastWasEq = false;
-          setDisp(0);
-          return;
-        }
-        if(k === "⌫"){
-          expr = expr.slice(0, -1);
-          lastWasEq = false;
-          setDisp(expr || 0);
-          return;
-        }
-        if(k === "="){
-          if(!expr) return;
-          try{
-            const res = safeEval(expr);
-            expr = String(res);
-            lastWasEq = true;
-            setDisp(expr);
-          }catch{
-            expr = "";
-            lastWasEq = false;
-            setDisp("Error");
-          }
-          return;
-        }
-
-        const isOp = ["+","-","*","/"].includes(k);
-
-        if(lastWasEq && !isOp){
-          expr = "";
-        }
-        lastWasEq = false;
-
-        if(isOp && expr && ["+","-","*","/"].includes(expr.slice(-1))){
-          expr = expr.slice(0, -1) + k;
-        } else {
-          expr += k;
-        }
-        setDisp(expr);
-      };
-
-      root.addEventListener("click", (e)=>{
-        const b = e.target.closest(".calcBtn");
-        if(!b) return;
-        press(b.getAttribute("data-k"));
-      });
-
-      winEl.addEventListener("keydown", (e)=>{
-        const key = e.key;
-        if((key >= "0" && key <= "9") || ["+","-","*","/","."].includes(key)){
-          press(key);
-          e.preventDefault();
-        } else if(key === "Enter"){
-          press("=");
-          e.preventDefault();
-        } else if(key === "Backspace"){
-          press("⌫");
-          e.preventDefault();
-        } else if(key.toLowerCase() === "c"){
-          press("C");
-          e.preventDefault();
-        } else if(key === "%"){
-          press("%");
-          e.preventDefault();
-        }
-      });
-    }
-
-    window.KEANU_OPEN = (id)=>{
-      const mod = MODULES[id];
-      if(mod) openApp(mod);
-    };
-  </script>
+</div>
+
+<script>
+const TRAIL_GIFS = [
+"https://tenor.com/es/view/skateordie-skate-high-five-fail-explode-gif-9275262","https://tenor.com/es/view/ride-or-die-live-stoked-ballard-yachtz-gif-16100689",
+"https://media.tenor.com/ipY7oKXzzXsAAAAC.gif","https://media.tenor.com/mNE9tPvd9HOAAAAC.gif","https://media.tenor.com/iA80uU51C8bAAAAC.gif","https://media.tenor.com/b2rCyAAAAC.gif","https://media.tenor.com/skB9ZQoDGohAAAAC.gif","https://media.tenor.com/BxeRXuk5chAAAAC.gif","https://media.tenor.com/b2fYSAAAAC.gif","https://media.tenor.com/brdvXAAAAC.gif","https://media.tenor.com/nofHmm2nWtUAAAAC.gif","https://media.tenor.com/HfwCAAAAC.gif","https://media.tenor.com/Lm0IAAAAC.gif","https://media.tenor.com/tpeA2skS3j9AAAAC.gif","https://media.tenor.com/oiYCh48iyThAAAAC.gif","https://media.tenor.com/bTcohAAAAC.gif","https://media.tenor.com/S6qmBNRdCHAAAAC.gif","https://media.tenor.com/nCHh5hwyPcIAAAAC.gif","https://media.tenor.com/bMN9sAAAAC.gif","https://media.tenor.com/bwkmDAAAAC.gif","https://media.tenor.com/gfdsGLlB5YAAAAC.gif","https://media.tenor.com/ivXUO7b2W07AAAAC.gif","https://media.tenor.com/kOlH9ACE9D3AAAAC.gif","https://media.tenor.com/pq8lqxnCNLyAAAAC.gif","https://media.tenor.com/b0AmVAAAAC.gif","https://media.tenor.com/urSwnJP09TgAAAAC.gif","https://media.tenor.com/gi6LcoAkz4YAAAAC.gif","https://media.tenor.com/rl1BsC9JSgEAAAAC.gif","https://media.tenor.com/keN3CuAE4E2AAAAC.gif","https://media.tenor.com/kp4Nt5KHYdiAAAAC.gif","https://media.tenor.com/bBLnhAAAAC.gif","https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWtzY2ltM3l5c3BzaTB4bHl5dmZsc3I1c3lqaHEwbzFjNHE3ZXE2NCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/6U9d8xKkez8iY/giphy.gif","https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3AwaTJnM2duaXp6enExazByZmJzdDY5OWZuZndmM2ExZjVtZHZpNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Uiujny6Aqrg40/giphy.gif","https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExY3Vseng1enh5MDIyZ2tyYW9tZzNkc3g1NTJncWZsZ2E0NWp0dms5NiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/d0DdMCREQChi3jGymW/giphy.gif","https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGo4OThoMmVwN3d6MW5wNnc3NzY1a2c4emg2cHpzcWdwMGZiYjlvciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xcjE6k4xFEsHUqVbci/giphy.gif","https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjk1dWg4YXppc3preGhoZjhoZnNzdWFuZ2F5ZWk2aXRmajRlM3FiciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/VBVY9IJKDxwHK/giphy.gif","https://media.tenor.com/bQEJtAAAAC.gif","https://media.tenor.com/bOozCAAAAC.gif","https://media.tenor.com/M45aAAAAC.gif","https://media.tenor.com/bPi6WAAAAC.gif",
+"https://tenor.com/es/view/ride-or-die-live-stoked-ballard-yachtz-gif-16100689","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/QNjlQrkW0KQnOWwOiV/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/joYZIky213kuTlZMNs/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/3og0IJa2xGWfhLf7s4/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/pGskRXx85Qwp2/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThpYTExamc0d2xnZ3hsd3FyamtidHk2b2J5N2Uzb25lcHl3OHJ4byZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/amBY86NnEamRTF9zyL/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2puaHNmMmpqMXpvajI5ZTY2dmpuMnkweHF0ODMzeHRid2tqb2t2ZyZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/RhMmGFlRGT1UtgGTaD/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dW0xMjd5NnlzbXR0aDMxd2E5NHV4Z2N6MXJubmU1Z3R6em5lZm9xYSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/KztlbFLLDPx3L61A2x/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bjFpMzUzbWJxNmVoNTM3ZXZmbWsxNDBwcnhhcm5taG8wdmM3YTF1biZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/d7fmqELABC69ejVgf6/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bjFpMzUzbWJxNmVoNTM3ZXZmbWsxNDBwcnhhcm5taG8wdmM3YTF1biZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9dHM/2n3qPNXG92JIOgPWBH/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MmpsMzRpa2czNzZvMmlkZGNqejg5eWFwc2JxdHQxcW56NjduZ3EwcyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l2Sqbracpyp5pHBDy/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExanNmYXcxY2ZqYTJnZnlmaXN5a2N6OHhsczAyZG41em00dDBzZ2pjMiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vHcCevWbWkzwk/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExanNmYXcxY2ZqYTJnZnlmaXN5a2N6OHhsczAyZG41em00dDBzZ2pjMiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VKdoCR31r5EYM/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3b2k2bTVzczJhbHBlbWN0ZWVucTRrZXpxaDdzc3JjbnY4aXNtdWNmYiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/2GdACZsbRnTmo/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YWs4dXFkZG44eGtmNGR5eGpydm5oNjR5YjhiczF0dWxveWM0aDVqMSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/W04QVzelTHsNW/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YWs4dXFkZG44eGtmNGR5eGpydm5oNjR5YjhiczF0dWxveWM0aDVqMSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Mkrv6hMDj7kcM/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3d3N5ZTRxODB0aTBkMWEwNnF4NXRvdW9hbTk5bWpqZThzMGxrYWlzOSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/PvKlwYTiKATRe/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3eHIzZmt2NGR0NWIzbDZvdWp0b3FxcWU1MGYwMDZmdm0zZjdvb3VjNSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3GCeasnPeeImI/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bTA4ZTJuc2N6dTFmanN4aGt1cTl6eW80NG9sbW0zdW4yZ3JxbmFhYyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xyr51WobwN8Eo/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bjJxcnFqazd4bXZ2MndpaTF3OXNtZnBpMGdqdnNoZDl4Y3FhdTdpdSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/sytgHDEeDuGWc/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3Y3Z3ODE0Yzg1dzFuZnE1ZDRwZm92YWtvaGlwbGJ0c2hqdmNxbDAwNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/r4O7Pz62SMBnW/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3cDJxZTJjNTA3Mjhra3RpZWE0YXR0ejNsZjduaGZiNm54dW1rN2tseiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/RxR1KghIie2iI/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3cnpoMnMxNDRzNjk2MG5lYW5hNHVlMjFudGNrMzV1anl5b29oZGs5aCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/XYPXQnu0XFqG4/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bXB6anI1YmptNGljcDh1MWdpczk3cnUyeWdwY3A3MHo0bmJ5NGNpeSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/KfOdjTchcDEku203WE/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbG5oeWR0Mzh4bjJ6YWE3emNzeWg4cDMyams5OWR4OWtybnlnYzd3bSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/iT9VW5S66GQqmkBDdH/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3aWViaDg4N3k5N3A3NHVvbm5pbXd0b2hsaXhtNXFydnB5aDNncGY5aCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vCWhA5R2N8E0g/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnkwODdjaGE5dWsxd3Y1Nmt3cWQ0MHN3b2lpODRkNThzNTVweXk4ZCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/OBnwDJW77acLK/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2hxNnZlOWh5N2hpaWk0aDFhanBmcGRlN2xqaWd4MXg5dmtzdno1NSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/dZd2D5Da1954I/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2hxNnZlOWh5N2hpaWk0aDFhanBmcGRlN2xqaWd4MXg5dmtzdno1NSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/ACLCA6bvwBEvC/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeGlkdnNzb3hsNXoya2F2cmZsNHM2enFtdHFiY2w2YTMxM2ZrN3dsbSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/NEKJzG4MCs51K/giphy.gif","https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3OWRyZDBoaDJoZjF1czUwMTI2NzEzODBtYmM5eDhjZGxmcmNjbHdiaCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/QuUIwH4PqSBq1eyXa2/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjZiNnl2Z2FtZXhxMGt2dW4yMGt0cXEwYzhlcmh0OHk1MWI1aHo1ciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/yhRhIgnJIRD0I/giphy.gif","https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZG4xNmtrYnh6MjFmcGEycjE1emdob3cyd3NsYjhlc2w1cTlubmx2ZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/vqZbsjl4D2wLR0qdqE/giphy.gif",
+"https://raw.githubusercontent.com/KeanuCheese/MeetKeanu_Official_web/331217d9b7b52029156bf347cd579c8c91c2e993/Purple%20Beetle%20Girl.webp","https://raw.githubusercontent.com/KeanuCheese/MeetKeanu_Official_web/331217d9b7b52029156bf347cd579c8c91c2e993/Monarch%20Girl.webp","https://raw.githubusercontent.com/KeanuCheese/MeetKeanu_Official_web/331217d9b7b52029156bf347cd579c8c91c2e993/green_army_man.webp","https://raw.githubusercontent.com/KeanuCheese/MeetKeanu_Official_web/331217d9b7b52029156bf347cd579c8c91c2e993/stamp.webp",
+"https://raw.githubusercontent.com/KeanuCheese/MeetKeanu/3dbe84c77d707dc8d53f5c50d897026fdea8eec9/kean_wallride.gif","https://raw.githubusercontent.com/KeanuCheese/MeetKeanu/3dbe84c77d707dc8d53f5c50d897026fdea8eec9/kean_5050drop.gif"
+];
+const intro=document.getElementById('intro'), os=document.getElementById('os'), cta=document.getElementById('cta'), trail=document.getElementById('trail');
+let bag=[],last="",spawnAt=0;
+function refill(){bag=[...TRAIL_GIFS].sort(()=>Math.random()-.5)}
+function pick(){if(!bag.length)refill();let v=bag.pop();if(v===last&&bag.length)v=bag.pop();last=v;return v}
+refill();
+addEventListener('mousemove',e=>{if(intro.style.display==='none')return;cta.style.left=e.clientX+'px';cta.style.top=e.clientY+'px';cta.classList.add('on');if(performance.now()-spawnAt<300)return;spawnAt=performance.now();const im=new Image();im.className='trailItem';im.src=pick();im.style.left=e.clientX+'px';im.style.top=e.clientY+'px';im.style.setProperty('--r',`${Math.floor(Math.random()*46-23)}deg`);trail.appendChild(im);while(trail.children.length>180)trail.removeChild(trail.firstChild)});
+function showOS(){intro.style.display='none';cta.style.display='none';os.classList.add('on');openApp('about')}
+document.getElementById('introCard').addEventListener('click',showOS);
+document.getElementById('introCard').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showOS();}});
+
+const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+function sound(type='open'){const gain=audioCtx.createGain();gain.gain.value=0.015;const o=audioCtx.createOscillator();o.type='square';o.frequency.value={open:660,close:240,min:320,error:170}[type]||520;o.connect(gain).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+0.06)}
+
+const modules={
+  about:{title:'about.txt',icon:'📝',html:`<div class='panel'><b>KeanuOS</b><p>Sistema renovado: doble click real, start funcional, ventanas optimizadas, multimedia/collabs y visores embebidos.</p></div>`},
+  documents:{title:'Documents',icon:'📄',html:`<div class='panel'>Documentos del sistema listos.</div>`},
+  run:{title:'Run…',icon:'🏃',html:`<div class='panel'><div>Escribe un destino:</div><input id='runInput' style='width:100%;margin:8px 0;padding:6px' placeholder='https://... o app://about'><button id='runGo'>Abrir</button></div>`},
+  programs:{title:'Programs',icon:'📂',html:`<div class='panel'>Submenú Programs habilitado (visual Win95 ▶).</div>`},
+  collabs:{title:'Collabs',icon:'🤝',type:'folder',items:[
+    {icon:'🌐',name:'Amazonic',url:'https://amazonicwav.tumblr.com/'},
+    {icon:'🛍️',name:'Loot apparel boutique',url:'https://www.etsy.com/shop/LootApparelBoutique'}
+  ]},
+  multimedia:{title:'Multimedia',icon:'🎬',type:'folder',items:[
+    {icon:'🎞️',name:'Basquiat_1996_JulianSchnabel',url:'https://www.youtube.com/watch?v=9D9AweGhI3c'},
+    {icon:'🎞️',name:'La_Bella_Verte_1996_ColineSerreau',url:'https://odysee.com/@404whiterose:4/La-Belle-Verte-1996-%28The-Green-Beautiful%29-Dvdrip-X264-Highcode-1:b'},
+    {icon:'🎞️',name:'CloudAtlas_2013_LanaWachowski_TomTykwer_LillyWachowski',url:'https://youtu.be/gTHgYkP_ksg?si=h8SkPasXsRMmh1Py'},
+    {icon:'🧛',name:'Bride_of_Deimos_1988_Rintaro_byMadhouse',url:'https://youtu.be/KScaPWhZxmI?si=E_QQSK8grr-BVsQL'},
+    {icon:'🧛',name:'Vampire_HunterD_Bloodlust_2000_YoshiakiKawajiri_byMadhause',url:'https://youtu.be/IIHnnI17joE?si=bX3nugK40jgKXtHf'},
+    {icon:'🎬',name:'Estract_Chronos_1985_RonFricke',url:'https://www.youtube.com/watch?v=U-_DxBxDtVE'},
+    {icon:'📕',name:'El_Principito_Antoine_de_SaintExupéry',url:'https://digitales.bcn.gob.ar/files/textos/El-Principitocompleto.pdf'}
+  ]}
+};
+
+const desktopIcons=[
+  {id:'about',label:'About',icon:'📝',x:18,y:18,open:()=>openApp('about')},
+  {id:'collabs',label:'Collabs',icon:'🤝',x:18,y:112,open:()=>openFolder('collabs')},
+  {id:'multimedia',label:'Multimedia',icon:'🎬',x:18,y:206,open:()=>openFolder('multimedia')},
+  {id:'dali',label:'Dreams of Dali: 360',icon:'🎥',x:18,y:300,open:()=>openURLWindow('Dreams of Dali: 360','🎥','https://www.youtube.com/watch?v=F1eLeIocAcU&list=RDF1eLeIocAcU&start_radio=1')},
+  {id:'stoken',label:'Quest for stoken',icon:'🪙',x:18,y:394,open:()=>openURLWindow('Quest for stoken','🪙','https://quest-for-stoken.vercel.app/')}
+];
+
+let selected=null,z=30; const wins=new Map();
+const iconsEl=document.getElementById('icons'),tasks=document.getElementById('tasks'),startBtn=document.getElementById('startBtn'),startMenu=document.getElementById('startMenu');
+function mkWindow(id,title,icon,html){
+  if(wins.has(id)){const w=wins.get(id);w.el.style.display='flex';focus(w);return w.el}
+  const el=document.createElement('div');el.className='win';el.dataset.id=id;el.style.left=(90+Math.random()*140)+'px';el.style.top=(60+Math.random()*90)+'px';
+  el.innerHTML=`<div class='head'><div class='title'><span>${icon}</span><span>${title}</span></div><div class='btns'><div class='btn' data-a='min'>_</div><div class='btn' data-a='max'>□</div><div class='btn' data-a='close'>×</div></div></div><div class='body'>${html}</div>`;
+  document.getElementById('desktop').appendChild(el);
+  const task=document.createElement('div');task.className='task active';task.textContent=title;tasks.appendChild(task);
+  const state={el,task};wins.set(id,state);focus(state);sound('open');
+  task.onclick=()=>{if(el.style.display==='none'){el.style.display='flex';focus(state)}else if(task.classList.contains('active')){el.style.display='none';task.classList.remove('active')}else focus(state)};
+  el.addEventListener('mousedown',()=>focus(state));
+  const head=el.querySelector('.head');let drag=false,sx=0,sy=0,ox=0,oy=0;
+  head.onmousedown=e=>{if(el.classList.contains('max'))return;drag=true;sx=e.clientX;sy=e.clientY;const r=el.getBoundingClientRect();ox=r.left;oy=r.top};
+  addEventListener('mousemove',e=>{if(!drag)return;el.style.left=Math.max(4,Math.min(innerWidth-el.offsetWidth-4,ox+e.clientX-sx))+'px';el.style.top=Math.max(4,Math.min(innerHeight-el.offsetHeight-46,oy+e.clientY-sy))+'px'},{passive:true});
+  addEventListener('mouseup',()=>drag=false);
+  head.onclick=e=>{const b=e.target.closest('.btn');if(!b)return;const a=b.dataset.a;if(a==='min'){el.style.display='none';task.classList.remove('active');sound('min')}if(a==='max'){el.classList.toggle('max');b.textContent=el.classList.contains('max')?'❐':'□'}if(a==='close'){el.remove();task.remove();wins.delete(id);sound('close')}};
+  head.ondblclick=()=>{const b=head.querySelector('[data-a=max]');b.click();};
+  return el;
+}
+function focus(state){z++;state.el.style.zIndex=z;document.querySelectorAll('.task').forEach(t=>t.classList.remove('active'));state.task.classList.add('active')}
+function openApp(id){const m=modules[id];if(!m)return sound('error');const w=mkWindow(id,m.title,m.icon,m.html);if(id==='run'){const i=w.querySelector('#runInput');const g=w.querySelector('#runGo');g.onclick=()=>{const v=i.value.trim();if(!v)return; if(v.startsWith('app://'))openApp(v.replace('app://','')); else openURLWindow(v,'🌐',v);};}}
+function urlToEmbed(url){
+  try{const u=new URL(url);if(u.hostname.includes('youtube.com')||u.hostname.includes('youtu.be')){let vid='';if(u.hostname.includes('youtu.be'))vid=u.pathname.slice(1);else vid=u.searchParams.get('v');if(vid)return `https://www.youtube.com/embed/${vid}?autoplay=0&rel=0`}
+    if(u.hostname.includes('odysee.com')){return `https://odysee.com/$/embed${u.pathname}${u.search}`}
+    if(url.toLowerCase().endsWith('.pdf')) return url;
+  }catch{}
+  return url;
+}
+function openURLWindow(title,icon,url){const embed=urlToEmbed(url);const isPdf=url.toLowerCase().includes('.pdf');mkWindow('url:'+title,title,icon,`<div class='panel' style='height:100%;display:flex;flex-direction:column;gap:8px'><div class='tiny'>${url}</div><iframe class='embed' src='${embed}' allow='autoplay; fullscreen; encrypted-media; picture-in-picture' referrerpolicy='no-referrer' loading='lazy'></iframe>${isPdf?"<div class='tiny'>PDF visible dentro del sistema.</div>":''}</div>`)}
+function openFolder(id){const f=modules[id];if(!f)return;const html=`<div class='panel'><div class='folderGrid'>${f.items.map((it,ix)=>`<div class='entry' data-i='${ix}'><div>${it.icon}</div><div><b>${it.name}</b><div class='tiny'>Abrir en ventana del sistema</div></div></div>`).join('')}</div></div>`;const w=mkWindow(id,f.title,f.icon,html);w.querySelectorAll('.entry').forEach(e=>e.onclick=()=>{const it=f.items[+e.dataset.i];openURLWindow(it.name,it.icon,it.url)});
+}
+
+function renderIcons(){iconsEl.innerHTML='';desktopIcons.forEach(ic=>{const el=document.createElement('div');el.className='deskIcon';el.style.left=ic.x+'px';el.style.top=ic.y+'px';el.innerHTML=`<div class='box'>${ic.icon}</div><div class='lbl'>${ic.label}</div>`;let drag=false,dx=0,dy=0,moved=false;el.addEventListener('click',e=>{e.stopPropagation();document.querySelectorAll('.deskIcon').forEach(d=>d.classList.remove('sel'));el.classList.add('sel');selected=el;});el.addEventListener('dblclick',e=>{e.stopPropagation();ic.open();});el.addEventListener('pointerdown',e=>{if(e.button!==0)return;drag=true;moved=false;const r=el.getBoundingClientRect();dx=e.clientX-r.left;dy=e.clientY-r.top;el.setPointerCapture(e.pointerId)});el.addEventListener('pointermove',e=>{if(!drag)return;moved=true;const nx=Math.max(4,Math.min(innerWidth-el.offsetWidth-4,e.clientX-dx));const ny=Math.max(4,Math.min(innerHeight-el.offsetHeight-52,e.clientY-dy));el.style.left=nx+'px';el.style.top=ny+'px'});el.addEventListener('pointerup',()=>{drag=false;ic.x=parseInt(el.style.left)||ic.x;ic.y=parseInt(el.style.top)||ic.y;});iconsEl.appendChild(el);});}
+renderIcons();
+addEventListener('click',()=>{document.querySelectorAll('.deskIcon').forEach(d=>d.classList.remove('sel'));startMenu.classList.remove('on')});
+
+startBtn.onclick=e=>{e.stopPropagation();startMenu.classList.toggle('on')};
+startMenu.onclick=e=>{const item=e.target.closest('.menuItem');if(!item)return;startMenu.classList.remove('on');const act=item.dataset.open;
+  if(act==='shutdown'){os.classList.remove('on');intro.style.display='flex';cta.style.display='block';sound('close');return;}
+  if(act==='discord'){window.open('https://discord.com/users/849764011670110250','_blank','noopener');return;}
+  if(act==='tumblr')return openURLWindow('Tumblr','🌀','https://dadaisnothingmeh.tumblr.com/');
+  if(act==='skatehive')return openURLWindow('Skatehive','🛹','https://skatehive.app/user/keanucheese?view=snaps');
+  if(['programs','documents','run'].includes(act))return openApp(act);
+};
+
+const fmt=new Intl.DateTimeFormat('es-CL',{timeZone:'America/Santiago',hour:'2-digit',minute:'2-digit',year:'numeric',month:'2-digit',day:'2-digit',hour12:false});
+setInterval(()=>document.getElementById('clock').textContent=fmt.format(new Date()),1000);
+document.getElementById('clock').textContent=fmt.format(new Date());
+
+// ocultar overlays molestos genéricos (cookies / errores embebidos)
+const blocker=document.createElement('style');
+blocker.textContent=`[id*='cookie'],[class*='cookie'],[id*='odoo'],[class*='odoo-error'],[class*='error-client']{display:none!important}`;
+document.head.appendChild(blocker);
+</script>
 </body>
 </html>
