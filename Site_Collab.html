@@ -1,0 +1,258 @@
+<section id="site-collab-odoo" class="sc-root">
+  <style>
+    #site-collab-odoo {
+      --sc-red: #dd1111;
+      --sc-blue: #112a9a;
+      --sc-paper: #eef9df;
+      --sc-link: #0023a7;
+      --sc-green: #1d6a2f;
+      --sc-purple: #b7a9ff;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      color: #101010;
+      background: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDF0aW1qNDIwZ2xtNWloZml1cWMwaXFtejE5ZjN5eGk0NTM1aTlhMiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/100PgquHm9j3sQ/giphy.gif") center top/130px repeat;
+      border: 3px solid #000;
+      max-width: 1120px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    #site-collab-odoo * { box-sizing: border-box; }
+
+    #site-collab-odoo .sc-header {
+      border-bottom: 3px solid #000;
+      background: linear-gradient(180deg, #fefefe, #dedede);
+      padding: 8px;
+    }
+
+    #site-collab-odoo .sc-brand {
+      border: 2px solid #444;
+      background: var(--sc-red);
+      color: #fff;
+      text-align: center;
+      font: 700 clamp(22px, 4vw, 36px)/1.1 "Trebuchet MS", Verdana, sans-serif;
+      padding: 6px;
+      text-shadow: 1px 1px #000;
+    }
+
+    #site-collab-odoo .sc-subbrand {
+      margin-top: 6px;
+      border: 2px solid #666;
+      background: #f4f0bd;
+      text-align: center;
+      font: 700 clamp(20px, 3vw, 30px)/1.2 "Times New Roman", Times, serif;
+      color: #b30000;
+      padding: 6px 10px;
+    }
+
+    #site-collab-odoo .sc-toplinks {
+      margin-top: 6px;
+      border: 2px solid #888;
+      background: #fff;
+      text-align: center;
+      padding: 5px;
+      font: 700 20px/1.2 "Times New Roman", serif;
+    }
+
+    #site-collab-odoo .sc-toplinks a {
+      color: var(--sc-link);
+      text-decoration: none;
+      margin: 0 6px;
+    }
+
+    #site-collab-odoo .sc-lang-switch {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      background: #ecf4ff;
+      border-top: 2px solid #000;
+      border-bottom: 2px solid #000;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    #site-collab-odoo .sc-lang-switch input { position: absolute; opacity: 0; pointer-events: none; }
+    #site-collab-odoo .sc-lang-switch label {
+      border: 2px outset #888;
+      background: #fff;
+      padding: 3px 8px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    #site-collab-odoo #sc-lang-en:checked ~ .sc-lang-switch label[for="sc-lang-en"],
+    #site-collab-odoo #sc-lang-es:checked ~ .sc-lang-switch label[for="sc-lang-es"],
+    #site-collab-odoo #sc-lang-pt:checked ~ .sc-lang-switch label[for="sc-lang-pt"] {
+      border-style: inset;
+      background: #ffe985;
+    }
+
+    #site-collab-odoo .sc-panel { display: none; }
+    #site-collab-odoo #sc-lang-en:checked ~ .sc-content .sc-panel-en,
+    #site-collab-odoo #sc-lang-es:checked ~ .sc-content .sc-panel-es,
+    #site-collab-odoo #sc-lang-pt:checked ~ .sc-content .sc-panel-pt { display: block; }
+
+    #site-collab-odoo .sc-grid {
+      display: grid;
+      grid-template-columns: 190px 1fr 190px;
+      gap: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,.86);
+    }
+
+    #site-collab-odoo .sc-rail {
+      border: 2px solid #000;
+      background: #efefef;
+      display: grid;
+      gap: 4px;
+      align-content: start;
+      padding: 4px;
+    }
+
+    #site-collab-odoo .sc-rail img,
+    #site-collab-odoo .sc-center-gifs img { width: 100%; border: 1px solid #000; background: #fff; display: block; }
+
+    #site-collab-odoo .sc-main {
+      border: 2px solid #000;
+      background: #fffbe6;
+      padding: 8px;
+    }
+
+    #site-collab-odoo .sc-hello {
+      margin: 4px 0 6px;
+      text-align: center;
+      font: 700 clamp(34px, 6vw, 54px)/1 "Times New Roman", serif;
+      color: #cb0000;
+      text-shadow: 2px 2px #fff;
+    }
+
+    #site-collab-odoo .sc-ticker {
+      border: 2px inset #777;
+      background: #fff;
+      padding: 6px;
+      font: 700 14px/1.3 "Courier New", monospace;
+      margin-bottom: 8px;
+    }
+
+    #site-collab-odoo .sc-intro,
+    #site-collab-odoo .sc-section {
+      border: 2px solid #7a7a7a;
+      background: var(--sc-paper);
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    #site-collab-odoo .sc-intro { font-size: 18px; line-height: 1.35; }
+    #site-collab-odoo .sc-invite { margin-top: 7px; color: #a30000; font-weight: 700; font-family: Georgia, "Times New Roman", serif; }
+    #site-collab-odoo .sc-section h2 { margin: 0 0 7px; color: var(--sc-blue); font: 700 34px/1 "Times New Roman", serif; }
+    #site-collab-odoo .sc-section ul { margin: 0; padding-left: 22px; }
+    #site-collab-odoo .sc-section li { margin-bottom: 7px; }
+    #site-collab-odoo .sc-projects strong { color: var(--sc-green); font-family: "Trebuchet MS", Verdana, sans-serif; }
+    #site-collab-odoo .sc-projects a { color: var(--sc-link); font-weight: 700; text-decoration: underline; }
+
+    #site-collab-odoo .sc-center-gifs {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(90px, 1fr));
+      gap: 6px;
+      border: 2px solid #000;
+      background: #dff3ff;
+      padding: 5px;
+    }
+
+    #site-collab-odoo .sc-footer-title {
+      margin: 10px;
+      border: 2px outset #646464;
+      background: var(--sc-purple);
+      text-align: center;
+      padding: 7px;
+      font: 700 28px/1.2 "Times New Roman", serif;
+    }
+
+    #site-collab-odoo .sc-footer-note {
+      text-align: center;
+      padding: 0 10px 10px;
+      font: 12px/1.3 Arial, sans-serif;
+    }
+
+    @media (max-width: 980px) {
+      #site-collab-odoo .sc-grid { grid-template-columns: 1fr; }
+      #site-collab-odoo .sc-rail { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+
+  <input type="radio" name="sc-lang" id="sc-lang-en" checked>
+  <input type="radio" name="sc-lang" id="sc-lang-es">
+  <input type="radio" name="sc-lang" id="sc-lang-pt">
+
+  <header class="sc-header">
+    <div class="sc-brand">Site_Collab: Dynamic Executive-Creative 90s Network</div>
+    <div class="sc-subbrand">Have a Collaboration? Just type it in and click Ask!</div>
+    <nav class="sc-toplinks"><a href="#">Free</a>|<a href="#">Gallery</a>|<a href="#">Documentation</a>|<a href="#">Contact</a></nav>
+  </header>
+
+  <div class="sc-lang-switch">
+    <span><strong>Website language:</strong></span>
+    <label for="sc-lang-en">English</label>
+    <label for="sc-lang-es">Español</label>
+    <label for="sc-lang-pt">Português</label>
+  </div>
+
+  <div class="sc-content">
+    <section class="sc-panel sc-panel-en">
+      <div class="sc-grid">
+        <aside class="sc-rail">
+          <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjVjaWZ3bGFpejhlbDNoazRhaWdkdXZjbWJod29peDEzY25vbmFoaCZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9dHM/u5N9RAqo8dAGZGo0jK/giphy.gif" alt="retro sticker">
+          <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dnJyY2w0cDU0NDc3enB3dzN4b25kdWJuYnRwaTV2bHY1a2llOWN0MSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/TGKC97DXSijcMlwAjW/giphy.gif" alt="retro sticker">
+          <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3NzV6c2xnY3F6c2d3bnZsMnhqa3k4M2F2anN4eWplaHlidnpxc2NkcCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/PkSQgkqMqz3NZyyBgy/giphy.gif" alt="retro gif">
+        </aside>
+        <article class="sc-main">
+          <h2 class="sc-hello">Hello world!</h2>
+          <div class="sc-ticker">Innovation + web3 + art + culture + events :: Creative Executive Collaboration Board</div>
+          <section class="sc-intro">
+            <div>I am keanucheese, a modern polymath — chef, poet, and skater in real life.</div>
+            <div class="sc-invite">I invite you to collaborate on projects focused on innovation, community, and hybrid IRL/URL experiences.</div>
+          </section>
+          <section class="sc-section">
+            <h2>View services</h2>
+            <ul><li>Webs</li><li>Discord servers</li><li>Research innovation</li><li>Art &amp; Design</li></ul>
+          </section>
+          <section class="sc-section sc-projects">
+            <h2>These are the collabs delivered</h2>
+            <ul>
+              <li><a href="https://www.etsy.com/shop/LootApparelBoutique" target="_blank">Loot Apparel Boutique</a> — <strong>research and desing | USA.</strong> Trend research + visual design for apparel narrative and storefront direction.</li>
+              <li><a href="https://amazonicwav.tumblr.com/" target="_blank">AmazoNic Wav</a> — <strong>user exp and video | worldwide.</strong> User experience curation and audiovisual editorial execution with global reach.</li>
+              <li><a href="https://nexusgenesis.odooconsultores.cl/recepcion" target="_blank">Nexus Genesis / Recepción</a> — <strong>IRL Comunity | Neo-Medieval.</strong> In-person community activation, thematic framing, and cultural program support.</li>
+              <li><a href="https://nexusgenesis.odooconsultores.cl/tematicas" target="_blank">Nexus Genesis / Temáticas</a> — <strong>IRL/URL Comunity and innovation | Solarpunk.</strong> Physical + digital community bridge through participatory innovation dynamics.</li>
+              <li>Wizards SK8 — <strong>IRL Comunity | Skateboarding.</strong> Skate community development, sessions activation, and local scene energy.</li>
+            </ul>
+          </section>
+          <div class="sc-center-gifs">
+            <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MWQyMHJ2YmtsZDgzM2lsMXd5YTU0dXFnMWt5Yjl5bGN6cndidno0bSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/z3Ecl5aJmqQJrdN5M5/giphy.gif" alt="90s sticker">
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmh1MmRzdHB2MHVwdDdsaXdrYXNlaXpjdDV5Y2Yzd3g5Y2FxcnFzOSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/s99VUdNNp2kzYJDq4B/giphy.gif" alt="90s sticker">
+            <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3cGRseXByODBwMzJmZXU3N2N0NXp3ZzMwZ2VmdHJxaHZwMm9hYWl2diZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/37Uer6MbSlFgA/giphy.gif" alt="90s sticker">
+          </div>
+        </article>
+        <aside class="sc-rail">
+          <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ajR2aGRrMm4wbmwzMjh5cThrc2p4a3M3ZnBic3ZnZ2xpMGxmNTR3aiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/ZbQ6C34PmI9n7ETkbm/giphy.gif" alt="retro sticker">
+          <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dTc4ZjUwdjd6OTE0dHRsMXRsZmo1c3dwNWNid24wNG4zZWNxcGk3cyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/NjPEDD7S9Jssw/giphy.gif" alt="retro gif">
+          <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDF0aW1qNDIwZ2xtNWloZml1cWMwaXFtejE5ZjN5eGk0NTM1aTlhMiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/100PgquHm9j3sQ/giphy.gif" alt="retro gif">
+        </aside>
+      </div>
+    </section>
+
+    <section class="sc-panel sc-panel-es">
+      <div class="sc-grid"><article class="sc-main"><h2 class="sc-hello">¡Hola mundo!</h2><div class="sc-ticker">Innovación + web3 + arte + cultura + eventos :: Creative Executive Collaboration Board</div><section class="sc-intro"><div>Soy keanucheese, un polímata moderno — chef, poeta y skater en la vida real.</div><div class="sc-invite">Te invito a colaborar en proyectos de innovación, comunidad y experiencias híbridas IRL/URL.</div></section><section class="sc-section"><h2>Ver servicios</h2><ul><li>Webs</li><li>Servidores de Discord</li><li>Research innovation</li><li>Art &amp; Design</li></ul></section></article></div>
+    </section>
+
+    <section class="sc-panel sc-panel-pt">
+      <div class="sc-grid"><article class="sc-main"><h2 class="sc-hello">Olá mundo!</h2><div class="sc-ticker">Inovação + web3 + arte + cultura + eventos :: Creative Executive Collaboration Board</div><section class="sc-intro"><div>Sou keanucheese, um polímata moderno — chef, poeta e skatista na vida real.</div><div class="sc-invite">Convido você para colaborar em projetos de inovação, comunidade e experiências híbridas IRL/URL.</div></section><section class="sc-section"><h2>Ver serviços</h2><ul><li>Webs</li><li>Servidores de Discord</li><li>Research innovation</li><li>Art &amp; Design</li></ul></section></article></div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="sc-footer-title">Copyright © 1999-20XX by Keanucheese. All rights reserved.</div>
+    <div class="sc-footer-note">SITE_COLLAB, logos, and creative marks are service marks of Keanucheese. Other brands belong to their owners.</div>
+  </footer>
+</section>
