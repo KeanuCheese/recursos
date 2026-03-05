@@ -3,248 +3,338 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Site Collab — Keanucheese</title>
+  <title>Site Collab | Odoo Embed | Y2K Edition</title>
   <style>
-    :root {
-      --bg: #05060f;
-      --surface: rgba(12, 16, 32, 0.74);
-      --surface-strong: rgba(9, 12, 24, 0.9);
-      --text: #eef1ff;
-      --muted: #b7c1ff;
-      --line: rgba(255, 255, 255, 0.16);
-      --accent: #67e8f9;
-      --accent-2: #a78bfa;
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    /*
+      ODOO EMBED READY:
+      - Copia desde <section id="site-collab-odoo"> hasta </section>
+      - Este CSS está 100% scopeado al ID para evitar conflictos en Odoo.
+    */
+
+    #site-collab-odoo,
+    #site-collab-odoo * {
+      box-sizing: border-box;
     }
 
-    * { box-sizing: border-box; }
+    #site-collab-odoo {
+      --bg-dark: #070b21;
+      --neon-cyan: #50eaff;
+      --neon-pink: #ff5bcd;
+      --neon-lime: #b8ff39;
+      --panel: rgba(18, 23, 52, 0.9);
+      --line: #8da0ff;
+      --text: #edf1ff;
+      --muted: #c3ccff;
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color: var(--text);
-      background: radial-gradient(circle at 20% 10%, #1b2250 0%, #0a0f23 38%, var(--bg) 100%);
       position: relative;
-      overflow-x: hidden;
-    }
-
-    body::before,
-    body::after {
-      content: "";
-      position: fixed;
-      inset: -8vh -8vw;
-      pointer-events: none;
-      background-size: cover;
-      background-position: center;
-      filter: saturate(1.25) contrast(1.05);
-      z-index: -2;
-      opacity: 0.22;
-      transform: scale(1.04);
-    }
-
-    body::before {
-      background-image:
-        linear-gradient(135deg, rgba(6, 10, 24, 0.86), rgba(8, 12, 28, 0.62)),
-        url("kean_wallride.gif");
-      mix-blend-mode: lighten;
-      animation: floatA 22s ease-in-out infinite alternate;
-    }
-
-    body::after {
-      background-image:
-        linear-gradient(135deg, rgba(22, 10, 45, 0.65), rgba(0, 0, 0, 0.2)),
-        url("kean_5050drop.gif");
-      mix-blend-mode: screen;
-      opacity: 0.2;
-      animation: floatB 26s ease-in-out infinite alternate;
-      z-index: -1;
-    }
-
-    @keyframes floatA {
-      from { transform: scale(1.06) translateY(-1.5%); }
-      to { transform: scale(1.12) translateY(1.5%); }
-    }
-
-    @keyframes floatB {
-      from { transform: scale(1.04) translateX(-1.5%); }
-      to { transform: scale(1.1) translateX(1.5%); }
-    }
-
-    .grain {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 0.5px, transparent 0.5px);
-      background-size: 3px 3px;
-      opacity: 0.2;
-      z-index: -1;
-    }
-
-    .shell {
-      width: min(1020px, 92vw);
-      margin: 5vh auto;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
+      isolation: isolate;
+      width: min(1100px, 96vw);
+      margin: 28px auto;
+      padding: clamp(14px, 2.3vw, 28px);
+      border: 2px solid #d7dcff;
+      border-radius: 18px;
+      background:
+        linear-gradient(120deg, rgba(80, 234, 255, 0.16), rgba(255, 91, 205, 0.12) 45%, rgba(184, 255, 57, 0.1)),
+        var(--bg-dark);
+      color: var(--text);
+      font-family: "Trebuchet MS", "Verdana", "Tahoma", sans-serif;
+      box-shadow:
+        0 0 0 2px #2e3c86,
+        0 0 28px rgba(80, 234, 255, 0.35),
+        0 0 64px rgba(255, 91, 205, 0.22);
       overflow: hidden;
     }
 
-    .topbar {
-      padding: 14px 18px;
-      background: linear-gradient(90deg, rgba(103, 232, 249, 0.18), rgba(167, 139, 250, 0.16));
-      border-bottom: 1px solid var(--line);
+    #site-collab-odoo::before,
+    #site-collab-odoo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: -2;
+      opacity: 0.22;
+      background-size: cover;
+      background-position: center;
+      mix-blend-mode: screen;
+    }
+
+    #site-collab-odoo::before {
+      background-image:
+        linear-gradient(160deg, rgba(5, 8, 22, 0.75), rgba(12, 15, 33, 0.42)),
+        url("kean_wallride.gif");
+      animation: odooFloatA 18s ease-in-out infinite alternate;
+    }
+
+    #site-collab-odoo::after {
+      background-image:
+        linear-gradient(160deg, rgba(16, 5, 24, 0.58), rgba(7, 14, 36, 0.32)),
+        url("kean_5050drop.gif");
+      opacity: 0.2;
+      animation: odooFloatB 22s ease-in-out infinite alternate;
+      z-index: -1;
+    }
+
+    @keyframes odooFloatA {
+      from { transform: scale(1.06) translate(-1%, -1.2%); }
+      to { transform: scale(1.14) translate(1.2%, 1%); }
+    }
+
+    @keyframes odooFloatB {
+      from { transform: scale(1.05) translate(1%, -1%); }
+      to { transform: scale(1.12) translate(-1%, 1.2%); }
+    }
+
+    #site-collab-odoo .scanlines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.06) 0,
+        rgba(255,255,255,0.06) 1px,
+        transparent 2px,
+        transparent 4px
+      );
+      opacity: 0.2;
+      z-index: -1;
+    }
+
+    #site-collab-odoo .topbar {
       display: flex;
-      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      background: linear-gradient(90deg, rgba(41, 52, 126, 0.8), rgba(76, 20, 123, 0.7));
     }
 
-    .dots {
+    #site-collab-odoo .logo {
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: clamp(0.9rem, 2.4vw, 1.1rem);
+      color: #fff;
+      text-shadow: 0 0 10px rgba(80, 234, 255, 0.8);
+    }
+
+    #site-collab-odoo .chips {
       display: flex;
-      gap: 7px;
+      flex-wrap: wrap;
     }
 
-    .dots span {
-      width: 11px;
-      height: 11px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.35);
-    }
-
-    .title {
-      margin: 0;
-      font-size: clamp(0.9rem, 1.4vw, 1rem);
-      font-weight: 600;
-      letter-spacing: 0.02em;
+    #site-collab-odoo .chip {
+      border: 1px solid #9ab0ff;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      background: rgba(12, 20, 56, 0.85);
       color: var(--muted);
     }
 
-    .content {
-      padding: clamp(1.2rem, 2.8vw, 2rem);
-      display: grid;
-      gap: 16px;
-    }
-
-    .lang-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-    }
-
-    label { font-weight: 600; color: var(--muted); }
-
-    select {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 8px 14px;
-      background: var(--surface-strong);
-      color: var(--text);
-    }
-
-    .ticker {
-      border: 1px solid var(--line);
+    #site-collab-odoo .hero {
+      margin-top: 14px;
+      border: 2px solid #8aa2ff;
       border-radius: 14px;
-      padding: 10px 12px;
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--accent);
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
+      padding: clamp(14px, 2.4vw, 24px);
+      background: linear-gradient(150deg, rgba(13, 16, 36, 0.92), rgba(22, 13, 49, 0.88));
+      box-shadow: inset 0 0 20px rgba(80, 234, 255, 0.15);
       position: relative;
+      overflow: hidden;
     }
 
-    .ticker span {
+    #site-collab-odoo .starburst {
+      position: absolute;
+      right: clamp(10px, 2.2vw, 24px);
+      top: clamp(12px, 2.2vw, 24px);
+      width: clamp(76px, 12vw, 120px);
+      aspect-ratio: 1;
+      clip-path: polygon(50% 0%, 58% 30%, 88% 12%, 70% 42%, 100% 50%, 70% 58%, 88% 88%, 58% 70%, 50% 100%, 42% 70%, 12% 88%, 30% 58%, 0% 50%, 30% 42%, 12% 12%, 42% 30%);
+      background: radial-gradient(circle, #ffe96a 0 42%, #ff8f00 70%, #ff4f4f 100%);
+      color: #2e0b00;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+      font-weight: 900;
+      line-height: 1.1;
+      text-transform: uppercase;
+      transform: rotate(-10deg);
+      filter: drop-shadow(0 0 8px rgba(255, 233, 106, 0.65));
+    }
+
+    #site-collab-odoo .hello {
+      margin: 0;
+      padding-right: 128px;
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+      font-family: "Arial Black", "Impact", sans-serif;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow:
+        0 0 8px rgba(80, 234, 255, 0.95),
+        0 0 18px rgba(255, 91, 205, 0.7);
+    }
+
+    #site-collab-odoo .ticker {
+      margin-top: 14px;
+      border: 1px dashed #92f2ff;
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: rgba(11, 29, 64, 0.9);
+      overflow: hidden;
+      white-space: nowrap;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 8px rgba(80, 234, 255, 0.7);
+    }
+
+    #site-collab-odoo .ticker > span {
       display: inline-block;
       padding-left: 100%;
-      animation: run 16s linear infinite;
+      animation: odooTicker 15s linear infinite;
     }
 
-    @keyframes run {
+    @keyframes odooTicker {
       to { transform: translateX(-100%); }
     }
 
-    h1 {
-      margin: 0;
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      letter-spacing: 0.01em;
-    }
-
-    .intro {
-      margin: 0;
-      font-size: clamp(1rem, 2vw, 1.2rem);
-      line-height: 1.6;
-      color: #dce4ff;
-    }
-
-    .invite {
-      margin-top: 10px;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    .grid {
+    #site-collab-odoo .intro {
+      margin-top: 14px;
       display: grid;
-      gap: 14px;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      font-size: clamp(1rem, 1.9vw, 1.12rem);
+      line-height: 1.6;
     }
 
-    .card {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
+    #site-collab-odoo .invite {
+      color: var(--neon-lime);
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(184, 255, 57, 0.48);
     }
 
-    .card h2 {
-      margin-top: 0;
-      margin-bottom: 10px;
-      font-size: 1.1rem;
-      color: var(--accent-2);
+    #site-collab-odoo .toolbar {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
     }
 
-    ul {
+    #site-collab-odoo label {
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    #site-collab-odoo select {
+      border: 1px solid #b0c3ff;
+      background: #091434;
+      color: #f1f4ff;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-weight: 700;
+    }
+
+    #site-collab-odoo .grid {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    #site-collab-odoo .panel {
+      border: 2px solid #8ea5ff;
+      border-radius: 12px;
+      padding: 12px;
+      background: var(--panel);
+      box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.08);
+    }
+
+    #site-collab-odoo .panel h2 {
+      margin: 0 0 10px;
+      font-size: 1.08rem;
+      letter-spacing: 0.02em;
+      color: var(--neon-pink);
+      text-transform: uppercase;
+      text-shadow: 0 0 8px rgba(255, 91, 205, 0.6);
+    }
+
+    #site-collab-odoo .services {
+      grid-column: span 4;
+    }
+
+    #site-collab-odoo .collabs {
+      grid-column: span 8;
+    }
+
+    #site-collab-odoo ul {
       margin: 0;
       padding-left: 18px;
       display: grid;
       gap: 8px;
     }
 
-    a {
-      color: #93f3ff;
+    #site-collab-odoo a {
+      color: #8df9ff;
+      font-weight: 700;
+      text-decoration-thickness: 1px;
       text-underline-offset: 3px;
     }
 
-    .footer {
-      margin-top: 6px;
+    #site-collab-odoo .footer {
+      margin-top: 16px;
+      border-top: 1px dashed #90a8ff;
       padding-top: 10px;
-      border-top: 1px dashed var(--line);
-      color: var(--muted);
-      font-size: 0.9rem;
       text-align: center;
+      color: var(--muted);
+      font-size: 0.86rem;
     }
 
-    @media (max-width: 820px) {
-      .grid { grid-template-columns: 1fr; }
-      .shell { margin: 2.5vh auto; }
-      body::before, body::after { opacity: 0.16; }
+    @media (max-width: 880px) {
+      #site-collab-odoo .services,
+      #site-collab-odoo .collabs {
+        grid-column: span 12;
+      }
+
+      #site-collab-odoo .hello {
+        padding-right: 0;
+      }
+
+      #site-collab-odoo .starburst {
+        position: static;
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="grain"></div>
+  <section id="site-collab-odoo" aria-label="Site Collab Odoo block">
+    <div class="scanlines"></div>
 
-  <main class="shell">
     <header class="topbar">
-      <h2 class="title">SITE_COLLAB — Timesheets Magazine London Interactive</h2>
-      <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="logo">SITE COLLAB // Y2K NETWORK</div>
+      <div class="chips" aria-hidden="true">
+        <span class="chip">WEB</span>
+        <span class="chip">ART</span>
+        <span class="chip">WEB3</span>
+        <span class="chip">EVENTS</span>
+      </div>
     </header>
 
-    <section class="content">
-      <div class="lang-row">
+    <div class="hero">
+      <h1 class="hello" id="hello"></h1>
+      <div class="starburst">Graphic<br/>Mode</div>
+
+      <div class="ticker"><span id="ticker"></span></div>
+
+      <div class="intro">
+        <div id="bio"></div>
+        <div class="invite" id="invite"></div>
+      </div>
+
+      <div class="toolbar">
         <label for="lang">Idioma / Language / Idioma:</label>
         <select id="lang">
           <option value="es">Español</option>
@@ -252,108 +342,109 @@
           <option value="pt">Português</option>
         </select>
       </div>
+    </div>
 
-      <div class="ticker"><span id="ticker"></span></div>
+    <div class="grid">
+      <article class="panel services">
+        <h2 id="servicesTitle"></h2>
+        <ul id="servicesList"></ul>
+      </article>
 
-      <h1 id="hello"></h1>
-      <p class="intro">
-        <span id="bio"></span>
-        <span class="invite" id="invite"></span>
-      </p>
+      <article class="panel collabs">
+        <h2 id="collabsTitle"></h2>
+        <ul>
+          <li><a href="https://www.etsy.com/shop/LootApparelBoutique" target="_blank" rel="noopener noreferrer">Loot Apparel Boutique</a> — <span id="c1"></span></li>
+          <li><a href="https://amazonicwav.tumblr.com/" target="_blank" rel="noopener noreferrer">AmazoNic Wav</a> — <span id="c2"></span></li>
+          <li><a href="https://nexusgenesis.odooconsultores.cl/recepcion" target="_blank" rel="noopener noreferrer">Nexus Genesis / Recepción</a> — <span id="c3"></span></li>
+          <li><a href="https://nexusgenesis.odooconsultores.cl/tematicas" target="_blank" rel="noopener noreferrer">Nexus Genesis / Temáticas</a> — <span id="c4"></span></li>
+          <li>Wizards SK8 — <span id="c5"></span></li>
+        </ul>
+      </article>
+    </div>
 
-      <div class="grid">
-        <article class="card">
-          <h2 id="servicesTitle"></h2>
-          <ul id="servicesList"></ul>
-        </article>
-
-        <article class="card">
-          <h2 id="collabsTitle"></h2>
-          <ul>
-            <li><a href="https://www.etsy.com/shop/LootApparelBoutique" target="_blank" rel="noopener noreferrer">Loot Apparel Boutique</a> — <span id="c1"></span></li>
-            <li><a href="https://amazonicwav.tumblr.com/" target="_blank" rel="noopener noreferrer">AmazoNic Wav</a> — <span id="c2"></span></li>
-            <li><a href="https://nexusgenesis.odooconsultores.cl/recepcion" target="_blank" rel="noopener noreferrer">Nexus Genesis / Recepción</a> — <span id="c3"></span></li>
-            <li><a href="https://nexusgenesis.odooconsultores.cl/tematicas" target="_blank" rel="noopener noreferrer">Nexus Genesis / Temáticas</a> — <span id="c4"></span></li>
-            <li>Wizards SK8 — <span id="c5"></span></li>
-          </ul>
-        </article>
-      </div>
-
-      <div class="footer" id="footer"></div>
-    </section>
-  </main>
+    <footer class="footer" id="footer"></footer>
+  </section>
 
   <script>
-    const i18n = {
-      es: {
-        ticker: 'COLLAB STATION :: INNOVACIÓN + WEB3 + ARTE + CULTURA + EVENTOS',
-        hello: '¡Hola mundo!',
-        bio: 'Soy keanucheese, un polímata moderno — chef, poeta y skater en la vida real.',
-        invite: 'Te invito a colaborar en proyectos de innovación, web3, arte, cultura y eventos.',
-        servicesTitle: 'Servicios',
-        services: ['Webs', 'Servidores de Discord', 'Investigación e innovación', 'Arte & Diseño'],
-        collabsTitle: 'Collabs realizadas',
-        c1: 'research and design | USA',
-        c2: 'experiencia de usuario y video | worldwide',
-        c3: 'comunidad IRL | Neo-Medieval',
-        c4: 'comunidad IRL/URL e innovación | Solarpunk',
-        c5: 'comunidad IRL | Skateboarding',
-        footer: '© 199X-20XX Keanucheese Creative Executive Network'
-      },
-      en: {
-        ticker: 'COLLAB STATION :: INNOVATION + WEB3 + ART + CULTURE + EVENTS',
-        hello: 'Hello world!',
-        bio: 'I am keanucheese, a modern polymath — chef, poet, and skater in real life.',
-        invite: 'I invite you to collaborate on projects in innovation, web3, art, culture, and events.',
-        servicesTitle: 'Services',
-        services: ['Webs', 'Discord servers', 'Research innovation', 'Art & Design'],
-        collabsTitle: 'Delivered collabs',
-        c1: 'research and design | USA',
-        c2: 'user experience and video | worldwide',
-        c3: 'IRL community | Neo-Medieval',
-        c4: 'IRL/URL community and innovation | Solarpunk',
-        c5: 'IRL community | Skateboarding',
-        footer: '© 199X-20XX Keanucheese Creative Executive Network'
-      },
-      pt: {
-        ticker: 'COLLAB STATION :: INOVAÇÃO + WEB3 + ARTE + CULTURA + EVENTOS',
-        hello: 'Olá mundo!',
-        bio: 'Sou keanucheese, um polímata moderno — chef, poeta e skatista na vida real.',
-        invite: 'Convido você para colaborar em projetos de inovação, web3, arte, cultura e eventos.',
-        servicesTitle: 'Serviços',
-        services: ['Webs', 'Servidores de Discord', 'Pesquisa e inovação', 'Arte & Design'],
-        collabsTitle: 'Collabs realizadas',
-        c1: 'pesquisa e design | USA',
-        c2: 'experiência do usuário e vídeo | worldwide',
-        c3: 'comunidade IRL | Neo-Medieval',
-        c4: 'comunidade IRL/URL e inovação | Solarpunk',
-        c5: 'comunidade IRL | Skateboarding',
-        footer: '© 199X-20XX Keanucheese Creative Executive Network'
+    (function () {
+      const root = document.getElementById('site-collab-odoo');
+      if (!root) return;
+
+      const i18n = {
+        es: {
+          ticker: ':: COLLISION 2000 :: INNOVACIÓN + WEB3 + ARTE + CULTURA + EVENTOS ::',
+          hello: 'HOLA MUNDO',
+          bio: 'Soy keanucheese, polímata contemporáneo: chef, poeta y skater en la vida real.',
+          invite: 'Busco colaboraciones creativas en innovación, web3, arte, cultura y eventos.',
+          servicesTitle: 'SERVICIOS',
+          services: ['Diseño web', 'Servidores de Discord', 'Investigación e innovación', 'Arte y dirección visual'],
+          collabsTitle: 'COLLABS REALIZADAS',
+          c1: 'research and design | USA',
+          c2: 'experiencia de usuario y video | worldwide',
+          c3: 'comunidad IRL | Neo-Medieval',
+          c4: 'comunidad IRL/URL e innovación | Solarpunk',
+          c5: 'comunidad IRL | Skateboarding',
+          footer: '© 199X-20XX Keanucheese Creative Executive Network'
+        },
+        en: {
+          ticker: ':: COLLISION 2000 :: INNOVATION + WEB3 + ART + CULTURE + EVENTS ::',
+          hello: 'HELLO WORLD',
+          bio: 'I am keanucheese, a contemporary polymath: chef, poet, and skater in real life.',
+          invite: 'Open for creative collaborations in innovation, web3, art, culture, and events.',
+          servicesTitle: 'SERVICES',
+          services: ['Web design', 'Discord servers', 'Research & innovation', 'Art and visual direction'],
+          collabsTitle: 'DELIVERED COLLABS',
+          c1: 'research and design | USA',
+          c2: 'user experience and video | worldwide',
+          c3: 'IRL community | Neo-Medieval',
+          c4: 'IRL/URL community and innovation | Solarpunk',
+          c5: 'IRL community | Skateboarding',
+          footer: '© 199X-20XX Keanucheese Creative Executive Network'
+        },
+        pt: {
+          ticker: ':: COLLISION 2000 :: INOVAÇÃO + WEB3 + ARTE + CULTURA + EVENTOS ::',
+          hello: 'OLÁ MUNDO',
+          bio: 'Sou keanucheese, polímata contemporâneo: chef, poeta e skatista na vida real.',
+          invite: 'Aberto a colaborações criativas em inovação, web3, arte, cultura e eventos.',
+          servicesTitle: 'SERVIÇOS',
+          services: ['Design web', 'Servidores de Discord', 'Pesquisa e inovação', 'Arte e direção visual'],
+          collabsTitle: 'COLLABS REALIZADAS',
+          c1: 'pesquisa e design | USA',
+          c2: 'experiência do usuário e vídeo | worldwide',
+          c3: 'comunidade IRL | Neo-Medieval',
+          c4: 'comunidade IRL/URL e inovação | Solarpunk',
+          c5: 'comunidade IRL | Skateboarding',
+          footer: '© 199X-20XX Keanucheese Creative Executive Network'
+        }
+      };
+
+      const ids = ['ticker', 'hello', 'bio', 'invite', 'servicesTitle', 'collabsTitle', 'c1', 'c2', 'c3', 'c4', 'c5', 'footer'];
+      const langEl = root.querySelector('#lang');
+
+      function render(lang) {
+        const t = i18n[lang] || i18n.es;
+
+        ids.forEach((id) => {
+          const node = root.querySelector(`#${id}`);
+          if (node) node.textContent = t[id];
+        });
+
+        const list = root.querySelector('#servicesList');
+        if (!list) return;
+        list.innerHTML = '';
+
+        t.services.forEach((service) => {
+          const li = document.createElement('li');
+          li.textContent = service;
+          list.appendChild(li);
+        });
+
+        document.documentElement.lang = lang;
       }
-    };
 
-    const fields = ['ticker', 'hello', 'bio', 'invite', 'servicesTitle', 'collabsTitle', 'c1', 'c2', 'c3', 'c4', 'c5', 'footer'];
-    const langEl = document.getElementById('lang');
-
-    function render(lang) {
-      const t = i18n[lang] || i18n.es;
-      fields.forEach((id) => {
-        document.getElementById(id).textContent = t[id];
-      });
-
-      const servicesList = document.getElementById('servicesList');
-      servicesList.innerHTML = '';
-      t.services.forEach((service) => {
-        const li = document.createElement('li');
-        li.textContent = service;
-        servicesList.appendChild(li);
-      });
-
-      document.documentElement.lang = lang;
-    }
-
-    langEl.addEventListener('change', (event) => render(event.target.value));
-    render('es');
+      langEl.addEventListener('change', (event) => render(event.target.value));
+      render('es');
+    })();
   </script>
 </body>
 </html>
