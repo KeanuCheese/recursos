@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>{Title}</title>
+
+  <style>
+    :root{
+      /* INTRO (requested RAW) */
+      --intro-bg: url("https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Fondo_intro");
+      --intro-win: url("https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Imagen%20intro");
+
+      /* OS wallpaper (UPDATED requested RAW) */
+      --os-wallpaper: url("https://raw.githubusercontent.com/KeanuCheese/Theme-K/b89546ac5c77afc7d6f8aba43af1cde396caa31c/brokensc-1536x864.jpg");
+
+      /* Win95 palette */
+      --w95-face: #c0c0c0;
+      --w95-title: #000080;
+      --w95-title2: #1084d0;
+      --w95-text: #000;
+      --w95-dark: #000000;
+      --w95-mid: #808080;
+      --w95-light: #ffffff;
+      --w95-hilight: #dfdfdf;
+
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--font);
+      background:#0b0b0d;
+      color:#eaeaf2;
+      overflow:hidden;
+    }
+
+    /* =========================================================
+       Tumblr controls: invisible + top-left (requested)
+    ========================================================= */
+    iframe.tmblr-iframe,
+    .tmblr-iframe,
+    .tmblr-iframe--controls,
+    .tmblr-iframe--app{
+      position: fixed !important;
+      top: 8px !important;
+      left: 8px !important;
+      right: auto !important;
+      bottom: auto !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      z-index: 1 !important;
+    }
+
+    .tumblr-hidden{
+      position:fixed;
+      top:0; left:0;
+      opacity:0;
+      pointer-events:none;
+      width:1px; height:1px;
+      overflow:hidden;
+      z-index:-1;
+    }
+
+    /* ========================= INTRO ========================= */
+    .intro{
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background-image: var(--intro-bg);
+      background-repeat: repeat;   /* mosaic */
+      background-size: auto;
+      background-position: top left;
+    }
+    .introShade{
+      position:absolute;
+      inset:0;
+      background: rgba(0,0,0,.22);
+      pointer-events:none;
+    }
+    .introCard{
+      position:relative;
+      width: min(420px, 72vw);
+      aspect-ratio: 1 / 1;
+      max-height: min(420px, 72vw);
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      cursor:pointer;
+      user-select:none;
+      background: rgba(0,0,0,.20);
+      backdrop-filter: blur(8px);
+      outline:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px;
+      z-index: 2;
+    }
+    .introCard img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+      border-radius: 12px;
+      background: rgba(0,0,0,.10);
+    }
+
+    /* CTA follows mouse */
+    .cta{
+      position:fixed;
+      z-index:10000;
+      pointer-events:none;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.50);
+      color: rgba(255,255,255,.90);
+      font-size:12px;
+      transform: translate(14px, 14px);
+      backdrop-filter: blur(8px);
+      opacity:0;
+      transition: opacity .12s linear;
+      white-space:nowrap;
+    }
+    .cta.on{ opacity:1; }
+
+    /* Trail layer (above intro) */
+    .trailLayer{
+      position:fixed;
+      inset:0;
+      z-index: 10001;
+      pointer-events:none;
+    }
+    .trailItem{
+      position:absolute;
+      width:auto;
+      height:auto;
+      transform: translate(-50%, -50%) rotate(var(--r, 0deg));
+      opacity: 1;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.45));
+      will-change: transform;
+      max-width: 240px;
+      max-height: 240px;
+    }
+
+    .introFadeOut{ animation:introOut .28s linear forwards; }
+    @keyframes introOut{ to{ opacity:0; } }
+
+    /* ========================= OS (NO TOPBAR) ========================= */
+    .os{
+      position:fixed;
+      inset:0;
+      opacity:0;
+      pointer-events:none;
+      background-image: var(--os-wallpaper);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .osReady{
+      opacity:1;
+      pointer-events:auto;
+      transition: opacity .18s linear;
+    }
+
+    .desktop{
+      position:absolute;
+      left:0; right:0;
+      top:0; bottom:42px; /* NO TOPBAR */
+      overflow:hidden;
+    }
+
+    /* subtle grid optional */
+    .grid{
+      position:absolute;
+      inset:0;
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,.10) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,.10) 1px, transparent 1px);
+      background-size: 34px 34px;
+      opacity:.08;
+      pointer-events:none;
+    }
+
+    /* ========================= DESKTOP ICONS (Win95-ish) ========================= */
+    .iconsLayer{
+      position:absolute;
+      inset:0;
+      z-index:2;
+    }
+    .deskIcon{
+      position:absolute;
+      width: 78px;
+      padding: 6px 6px 8px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+      user-select:none;
+      cursor: default;
+      color:#fff;
+      font-family: Tahoma, Verdana, Arial, sans-serif;
+      text-shadow: 0 1px 2px rgba(0,0,0,.6);
+    }
+    .deskIcon:active{ cursor: grabbing; }
+    .deskIcon .icoBox{
+      width: 34px;
+      height: 34px;
+      display:grid;
+      place-items:center;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 4px;
+      backdrop-filter: blur(4px);
+    }
+    .deskIcon .lbl{
+      width: 100%;
+      text-align:center;
+      font-size: 12px;
+      line-height: 1.05;
+      white-space: normal;
+      word-break: break-word;
+    }
+    .deskIcon.isSelected{
+      outline: 1px dotted rgba(255,255,255,.85);
+      outline-offset: 2px;
+      background: rgba(0,0,0,.15);
+      border-radius: 6px;
+    }
+
+    /* Trash icon extra hint */
+    .deskIcon.isTrash .icoBox{
+      background: rgba(255,255,255,.22);
+      border-color: rgba(255,255,255,.30);
+    }
+    .trashHover{
+      filter: drop-shadow(0 0 14px rgba(255,255,255,.35));
+    }
+
+    /* ========================= TASKBAR (Win95) ========================= */
+    .taskbar{
+      position:absolute;
+      left:0; right:0; bottom:0;
+      height: 42px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding: 0 8px;
+      background: var(--w95-face);
+      border-top: 2px solid var(--w95-light);
+      font-family: Tahoma, Verdana, Arial, sans-serif;
+      z-index: 50;
+    }
+    .start{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:0;
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      background: var(--w95-face);
+      cursor:pointer;
+      user-select:none;
+      font-size:12px;
+      color: #000;
+      white-space:nowrap;
+    }
+    .start:active{
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      transform: translateY(1px);
+    }
+    .start .pill{
+      width:10px;height:10px;border-radius:0;
+      background: #008080;
+      border:1px solid var(--w95-dark);
+    }
+    .tasks{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      overflow:auto;
+      max-width: 62vw;
+      padding: 0 4px;
+    }
+    .task{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:0;
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      background: var(--w95-face);
+      font-size:12px;
+      color: #000;
+      white-space:nowrap;
+      cursor:pointer;
+      user-select:none;
+      max-width: 260px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .task.isActive{
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      background: var(--w95-hilight);
+    }
+    .spacer{ flex:1; }
+    .clock{
+      font-size:12px;
+      color: #000;
+      padding: 0 8px;
+      border: 2px solid;
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      background: var(--w95-hilight);
+      height: 28px;
+      display:flex;
+      align-items:center;
+      white-space:nowrap;
+    }
+
+    /* ========================= START MENU ========================= */
+    .startMenu{
+      position:absolute;
+      left: 8px;
+      bottom: 44px;
+      width: 240px;
+      background: var(--w95-face);
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      box-shadow: 0 10px 22px rgba(0,0,0,.35);
+      z-index: 60;
+      display:none;
+      font-family: Tahoma, Verdana, Arial, sans-serif;
+      color:#000;
+    }
+    .startMenu.on{ display:block; }
+    .startMenuHeader{
+      height: 42px;
+      background: linear-gradient(180deg, var(--w95-title), var(--w95-title2));
+      color:#fff;
+      display:flex;
+      align-items:center;
+      padding: 0 10px;
+      font-weight:700;
+      font-size: 13px;
+    }
+    .startMenuList{ padding: 6px; }
+    .menuItem{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 8px 8px;
+      cursor:pointer;
+      user-select:none;
+      border: 1px solid transparent;
+    }
+    .menuItem:hover{
+      background: #000080;
+      color:#fff;
+    }
+    .menuIco{
+      width: 22px; height: 22px;
+      display:grid; place-items:center;
+      background: rgba(0,0,0,.08);
+      border: 1px solid rgba(0,0,0,.20);
+    }
+    .menuSep{
+      height:1px;
+      background: rgba(0,0,0,.25);
+      margin: 6px 0;
+    }
+    .menuHint{
+      font-size: 11px;
+      opacity: .75;
+      padding: 6px 8px 10px;
+    }
+
+    /* ========================= WINDOWS (Win95) ========================= */
+    .win{
+      position:absolute;
+      width: min(860px, calc(100vw - 40px));
+      height: min(560px, calc(100vh - 150px));
+      left: 180px;
+      top: 70px;
+      border-radius: 0;
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      background: var(--w95-face);
+      box-shadow: none;
+      overflow:hidden;
+      z-index:5;
+      color: #000;
+      font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+    .winHeader{
+      height: 28px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 0 6px;
+      border-bottom: 2px solid var(--w95-mid);
+      background: linear-gradient(90deg, var(--w95-title), var(--w95-title2));
+      cursor: grab;
+      user-select:none;
+      color: #fff;
+    }
+    .winHeader:active{ cursor: grabbing; }
+    .winTitle{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-weight:700;
+      font-size:12px;
+      min-width:0;
+    }
+    .winTitle span:last-child{
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      max-width: 52vw;
+    }
+    .winBtns{ display:flex; gap:4px; align-items:center; }
+    .btn{
+      width: 20px;
+      height: 20px;
+      display:grid;
+      place-items:center;
+      border-radius: 0;
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      background: var(--w95-face);
+      color: #000;
+      cursor:pointer;
+      user-select:none;
+      font-size:12px;
+      line-height:1;
+    }
+    .btn:hover{ background: var(--w95-hilight); }
+    .btn:active{
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      transform: translateY(1px);
+    }
+    .winBody{
+      height: calc(100% - 28px);
+      background: var(--w95-face);
+      overflow:auto;
+      padding: 12px;
+      color:#000;
+    }
+    .panel{
+      border: 2px solid;
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      border-radius:0;
+      background: var(--w95-hilight);
+      padding: 10px;
+      color:#000;
+    }
+    .muted{ color: rgba(0,0,0,.70); }
+    .win.max{
+      left: 8px !important;
+      top: 8px !important;
+      width: calc(100vw - 16px) !important;
+      height: calc(100vh - 8px - 50px) !important; /* leave taskbar */
+      border-radius: 0;
+    }
+
+    /* ========================= Calculator ========================= */
+    .calc{
+      width: min(340px, 92vw);
+      margin: 0 auto;
+      background: var(--w95-face);
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      padding: 10px;
+    }
+    .calcDisplay{
+      width:100%;
+      height: 42px;
+      background: #fff;
+      border: 2px solid;
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      padding: 8px 10px;
+      font-family: "Courier New", monospace;
+      font-size: 18px;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      overflow:hidden;
+    }
+    .calcGrid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .calcBtn{
+      height: 36px;
+      display:grid;
+      place-items:center;
+      border: 2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      background: var(--w95-face);
+      cursor:pointer;
+      user-select:none;
+      font-size: 14px;
+    }
+    .calcBtn:active{
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      transform: translateY(1px);
+    }
+    .calcNote{
+      margin-top: 8px;
+      font-size: 11px;
+      opacity: .75;
+    }
+
+
+    .introFooter{
+      position:absolute;
+      bottom:14px;
+      left:0;
+      right:0;
+      text-align:center;
+      font-size:12px;
+      color:rgba(255,255,255,.9);
+      letter-spacing:.2px;
+      z-index:3;
+      text-shadow:0 1px 2px rgba(0,0,0,.5);
+    }
+    .menuItem.hasSub{ position:relative; }
+    .menuArrow{ margin-left:auto; font-size:12px; }
+    .subMenu{
+      position:absolute;
+      top:-2px;
+      left:100%;
+      min-width:220px;
+      display:none;
+      background:var(--w95-face);
+      border:2px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      z-index:70;
+      padding:4px;
+    }
+    .menuItem.hasSub:hover .subMenu{ display:block; }
+    .viewerFrame{ width:100%; height:100%; border:0; background:#fff; }
+    .winBody.noPad{ padding:0; }
+    .docList{ display:grid; gap:8px; }
+    .docItem{
+      display:flex; align-items:center; gap:10px; padding:8px;
+      border:1px solid rgba(0,0,0,.2); background:#fff; cursor:pointer;
+    }
+    .docItem:hover{ background:#000080; color:#fff; }
+    .docItem:hover .muted{ color:#d9d9ff; }
+    .hiddenNoise,[class*="odoo" i],[id*="odoo" i],[class*="cookie" i],[id*="cookie" i]{ display:none !important; }
+
+    @media (max-width: 560px){
+      .win{
+        left: 10px !important;
+        top: 64px !important;
+        width: calc(100vw - 20px) !important;
+        height: calc(100vh - 64px - 52px) !important;
+      }
+      .tasks{ max-width: 52vw; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .introFadeOut{ animation:none; }
+      .osReady{ transition:none; }
+      .cta{ transition:none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="tumblr-hidden">
+    {block:Pagination}{/block:Pagination}
+    {block:Posts}{/block:Posts}
+  </div>
+
+  <!-- INTRO -->
+  <div id="intro" class="intro" aria-label="Intro">
+    <div class="introShade"></div>
+    <div id="trailLayer" class="trailLayer" aria-hidden="true"></div>
+    <div id="introCard" class="introCard" tabindex="0" role="button" aria-label="Continue">
+      <img id="introImg" alt="Continue window" />
+    </div>
+  </div>
+
+  <div class="introFooter">Made with love by Keanucheese</div>
+  <div id="cta" class="cta">CLICK TO CONTINUE</div>
+
+  <!-- OS -->
+  <div id="os" class="os" aria-label="OS">
+    <div class="desktop" id="desktop">
+      <div class="grid"></div>
+      <div class="iconsLayer" id="iconsLayer"></div>
+    </div>
+
+    <div class="taskbar">
+      <div class="start" id="startBtn">
+        <span class="pill"></span>
+        <span>Start</span>
+      </div>
+      <div class="tasks" id="tasks"></div>
+      <div class="spacer"></div>
+      <div class="clock" id="clock2">--:--</div>
+    </div>
+
+    <div class="startMenu" id="startMenu" aria-label="Start menu">
+      <div class="startMenuHeader">KeanuOS</div>
+      <div class="startMenuList">
+        <div class="menuItem hasSub">
+          <div class="menuIco">📂</div><div>Programs</div><div class="menuArrow">▶</div>
+          <div class="subMenu">
+            <div class="menuItem" data-open="calculator"><div class="menuIco">🧮</div><div>Calculator</div></div>
+            <div class="menuItem" data-open="multimedia"><div class="menuIco">🎞️</div><div>Multimedia</div></div>
+            <div class="menuItem" data-open="collabs"><div class="menuIco">📁</div><div>Collabs</div></div>
+          </div>
+        </div>
+        <div class="menuItem" data-open="documents"><div class="menuIco">📄</div><div>Documents</div></div>
+        <div class="menuItem" data-open="run"><div class="menuIco">▶</div><div>Run…</div></div>
+        <div class="menuSep"></div>
+        <div class="menuItem" data-link="https://discord.com/users/849764011670110250" data-external="1"><div class="menuIco">💬</div><div>Discord</div></div>
+        <div class="menuItem" data-link="https://dadaisnothingmeh.tumblr.com/"><div class="menuIco">🅣</div><div>Tumblr</div></div>
+        <div class="menuItem" data-link="https://skatehive.app/user/keanucheese?view=snaps"><div class="menuIco">🛹</div><div>Skatehive</div></div>
+        <div class="menuSep"></div>
+        <div class="menuItem" data-action="shutdown"><div class="menuIco">⏻</div><div>Shutdown</div></div>
+      </div>
+      <div class="menuHint">Classic start menu with submenus.</div>
+    </div>
+  </div>
+
+  <script>
+const bgUrl = "https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Fondo_intro";
+const winUrl = "https://raw.githubusercontent.com/KeanuCheese/Theme-K/05b4cb69a1d7915199918635767714e3fcd53605/Imagen%20intro";
+
+const introImgEl = document.getElementById("introImg");
+introImgEl.src = winUrl;
+
+const intro = document.getElementById("intro");
+const introCard = document.getElementById("introCard");
+const cta = document.getElementById("cta");
+const os = document.getElementById("os");
+const desktop = document.getElementById("desktop");
+const tasksEl = document.getElementById("tasks");
+const iconsLayer = document.getElementById("iconsLayer");
+const trailLayer = document.getElementById("trailLayer");
+const startBtn = document.getElementById("startBtn");
+const startMenu = document.getElementById("startMenu");
+
+const TRAIL_GIFS = [
+  "https://media.giphy.com/media/QNjlQrkW0KQnOWwOiV/giphy.gif",
+  "https://media.giphy.com/media/joYZIky213kuTlZMNs/giphy.gif",
+  "https://media.giphy.com/media/3og0IJa2xGWfhLf7s4/giphy.gif",
+  "https://media.giphy.com/media/pGskRXx85Qwp2/giphy.gif",
+  "https://media.giphy.com/media/amBY86NnEamRTF9zyL/giphy.gif",
+  "https://raw.githubusercontent.com/KeanuCheese/Theme-K/a1eb6484394fc2ee14767d4c9be39508fc3a607d/block.jpg",
+  "https://raw.githubusercontent.com/KeanuCheese/Theme-K/d4dafe9271194126ed59309f61e3baa85b95dbd5/Ghost-Machine-_28999.jpg"
+];
+let bag=[], last="";
+const refill=()=>{bag=[...TRAIL_GIFS].sort(()=>Math.random()-.5)};
+const pick=()=>{if(!bag.length) refill(); let u=bag.pop(); if(u===last&&TRAIL_GIFS.length>1){if(!bag.length) refill();u=bag.pop();} last=u; return u;};
+refill();
+
+const TRAIL_MAX=140, TRAIL_COOLDOWN_MS=280;
+let lastSpawn=0, trailEnabled=true;
+function spawnTrail(x,y){
+  const now=performance.now(); if(now-lastSpawn<TRAIL_COOLDOWN_MS) return; lastSpawn=now;
+  const img=document.createElement("img"); img.className="trailItem"; img.src=pick();
+  img.style.left=x+"px"; img.style.top=y+"px"; img.style.setProperty("--r",`${Math.round(Math.random()*44-22)}deg`);
+  trailLayer.appendChild(img); while(trailLayer.children.length>TRAIL_MAX) trailLayer.firstChild.remove();
+}
+window.addEventListener("mousemove", e=>{ if(intro.style.display==='none') return; cta.style.left=e.clientX+"px"; cta.style.top=e.clientY+"px"; cta.classList.add("on"); if(trailEnabled) spawnTrail(e.clientX,e.clientY); },{passive:true});
+
+const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+function beep(type){
+  const map={open:[620,.03],close:[330,.04],error:[160,.08],min:[250,.04]};
+  const [freq,dur]=map[type]||map.open;
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.type='square'; o.frequency.value=freq; g.gain.value=0.0001;
+  o.connect(g); g.connect(audioCtx.destination);
+  const t=audioCtx.currentTime; g.gain.exponentialRampToValueAtTime(0.015,t+0.005); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.start(t); o.stop(t+dur+0.01);
+}
+
+function showOS(){
+  trailEnabled=false; trailLayer.innerHTML=''; cta.classList.remove('on'); intro.classList.add('introFadeOut');
+  setTimeout(()=>{ intro.style.display='none'; cta.style.display='none'; os.classList.add('osReady'); openApp('documents'); },260);
+}
+introCard.addEventListener('click',showOS);
+introCard.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showOS();}});
+
+setInterval(()=>document.getElementById('clock2').textContent=new Intl.DateTimeFormat('es-CL',{timeZone:'America/Santiago',hour:'2-digit',minute:'2-digit',year:'numeric',month:'2-digit',day:'2-digit',hour12:false}).format(new Date()),1000);
+
+function normalizeEmbed(url){
+  if(url.includes('youtube.com/watch')){const u=new URL(url);const v=u.searchParams.get('v');return `https://www.youtube-nocookie.com/embed/${v}?autoplay=1`;}
+  if(url.includes('youtu.be/')){const v=url.split('youtu.be/')[1].split('?')[0];return `https://www.youtube-nocookie.com/embed/${v}?autoplay=1`;}
+  if(url.includes('odysee.com/')){return url.replace('odysee.com/','odysee.com/$/embed/');}
+  return url;
+}
+
+const ITEMS={
+  documents:{title:'Documents',icon:'📄',type:'list',items:[{title:'El_Principito_Antoine_de_SaintExupéry',icon:'📕',url:'https://digitales.bcn.gob.ar/files/textos/El-Principitocompleto.pdf',kind:'pdf'}]},
+  run:{title:'Run…',icon:'▶',type:'text',html:'<div class="panel">Use Start o Desktop para abrir apps.</div>'},
+  collabs:{title:'Collabs',icon:'📁',type:'list',items:[
+    {title:'Amazonic',icon:'🧾',url:'https://amazonicwav.tumblr.com/',kind:'web'},
+    {title:'Loot apparel boutique',icon:'🛍️',url:'https://www.etsy.com/shop/LootApparelBoutique?ref=dashboard-header',kind:'web'}
+  ]},
+  multimedia:{title:'Multimedia',icon:'🎞️',type:'list',items:[
+    {title:'Basquiat_1996_JulianSchnabel',icon:'🎬',url:'https://www.youtube.com/watch?v=9D9AweGhI3c',kind:'video'},
+    {title:'La_Bella_Verte_1996_ColineSerreau',icon:'🎬',url:'https://odysee.com/@404whiterose:4/La-Belle-Verte-1996-%28The-Green-Beautiful%29-Dvdrip-X264-Highcode-1:b',kind:'video'},
+    {title:'CloudAtlas_2013_LanaWachowski_TomTykwer_LillyWachowski',icon:'🎬',url:'https://youtu.be/gTHgYkP_ksg?si=h8SkPasXsRMmh1Py',kind:'video'},
+    {title:'Bride_of_Deimos_1988_Rintaro_byMadhouse',icon:'🧛',url:'https://youtu.be/KScaPWhZxmI?si=E_QQSK8grr-BVsQL',kind:'video'},
+    {title:'Vampire_HunterD_Bloodlust_2000_YoshiakiKawajiri_byMadhause',icon:'🧛',url:'https://youtu.be/IIHnnI17joE?si=bX3nugK40jgKXtHf',kind:'video'},
+    {title:'Estract_Chronos_1985_RonFricke',icon:'🎞️',url:'https://www.youtube.com/watch?v=U-_DxBxDtVE',kind:'video'}
+  ]},
+  dreams:{title:'Dreams of Dali: 360',icon:'🎥',type:'web',url:'https://www.youtube.com/watch?v=F1eLeIocAcU&list=RDF1eLeIocAcU&start_radio=1'},
+  stoken:{title:'Quest for stoken',icon:'🪙',type:'web',url:'https://quest-for-stoken.vercel.app/'},
+  tumblr:{title:'Tumblr',icon:'🅣',type:'web',url:'https://dadaisnothingmeh.tumblr.com/'},
+  skatehive:{title:'Skatehive',icon:'🛹',type:'web',url:'https://skatehive.app/user/keanucheese?view=snaps'},
+  calculator:{title:'Calculator',icon:'🧮',type:'calc'}
+};
+
+const openWindows=new Map(); let zTop=10;
+function mkBody(item){
+  if(item.type==='text') return item.html;
+  if(item.type==='calc') return `<div class="calc" id="calcRoot"><div class="calcDisplay" id="calcDisplay">0</div><div class="calcGrid">${['C','⌫','%','/','7','8','9','*','4','5','6','-','1','2','3','+','0','.','=','*'].slice(0,19).map(k=>`<div class="calcBtn" data-k="${k==='*'?'=':k}">${k==='*'?'×':k}</div>`).join('')}</div></div>`;
+  if(item.type==='list') return `<div class="panel"><div class="docList">${item.items.map((it,i)=>`<div class="docItem" data-idx="${i}"><div>${it.icon}</div><div><div>${it.title}</div><div class="muted">${it.url}</div></div></div>`).join('')}</div></div>`;
+  const src=normalizeEmbed(item.url);
+  return `<iframe class="viewerFrame" referrerpolicy="no-referrer" allowfullscreen src="${src}"></iframe>`;
+}
+function focusWindow(win,task){zTop++; win.style.zIndex=zTop; document.querySelectorAll('.task').forEach(t=>t.classList.remove('isActive')); task.classList.add('isActive');}
+function attachDrag(win,header){let on=false,sx=0,sy=0,sl=0,st=0; header.addEventListener('pointerdown',e=>{if(e.target.closest('.btn'))return;on=true;sx=e.clientX;sy=e.clientY;sl=win.offsetLeft;st=win.offsetTop;});window.addEventListener('pointermove',e=>{if(!on||win.classList.contains('max'))return;win.style.left=Math.max(8,Math.min(innerWidth-win.offsetWidth-8,sl+e.clientX-sx))+'px';win.style.top=Math.max(8,Math.min(innerHeight-win.offsetHeight-50,st+e.clientY-sy))+'px';});window.addEventListener('pointerup',()=>on=false);}
+function buildWindow(id){
+  const mod=ITEMS[id]; if(!mod) return;
+  const win=document.createElement('div'); win.className='win'; win.dataset.id=id;
+  win.style.left=(80+Math.random()*120)+'px'; win.style.top=(52+Math.random()*80)+'px';
+  win.innerHTML=`<div class="winHeader"><div class="winTitle"><span>${mod.icon}</span><span>${mod.title}</span></div><div class="winBtns"><div class="btn" data-act="min">_</div><div class="btn" data-act="max">□</div><div class="btn" data-act="close">×</div></div></div><div class="winBody ${mod.type==='web'?'noPad':''}">${mkBody(mod)}</div>`;
+  desktop.appendChild(win);
+  const task=document.createElement('div'); task.className='task isActive'; task.textContent=mod.title; tasksEl.appendChild(task);
+  openWindows.set(id,{win,task});
+  const header=win.querySelector('.winHeader'); attachDrag(win,header);
+  header.addEventListener('click',e=>{const b=e.target.closest('.btn'); if(!b) return; const a=b.dataset.act; if(a==='min'){win.style.display='none';task.classList.remove('isActive');beep('min');} if(a==='max'){win.classList.toggle('max');} if(a==='close'){win.remove();task.remove();openWindows.delete(id);beep('close');}});
+  header.addEventListener('dblclick',()=>header.querySelector('[data-act=max]').click());
+  task.addEventListener('click',()=>{ if(win.style.display==='none'){win.style.display='block';} else if(task.classList.contains('isActive')){win.style.display='none'; task.classList.remove('isActive'); return;} focusWindow(win,task); });
+  win.addEventListener('mousedown',()=>focusWindow(win,task));
+  if(mod.type==='list'){
+    win.querySelectorAll('.docItem').forEach(el=>el.addEventListener('dblclick',()=>{const it=mod.items[+el.dataset.idx]; openViewer(it);}));
+  }
+  focusWindow(win,task); beep('open');
+}
+function openViewer(it){
+  if(it.kind==='pdf'||it.kind==='video'||it.kind==='web'){
+    const id='view_'+it.title.replace(/\W+/g,'_');
+    ITEMS[id]={title:it.title,icon:it.icon||'📄',type:'web',url:it.url};
+    openApp(id);
+  }
+}
+function openApp(id){if(openWindows.has(id)){const w=openWindows.get(id);w.win.style.display='block';focusWindow(w.win,w.task);return;} buildWindow(id);}
+
+const ICONS=[
+{id:'documents',label:'Documents',icon:'📄',x:22,y:18},
+{id:'collabs',label:'Collabs',icon:'📁',x:22,y:110},
+{id:'multimedia',label:'Multimedia',icon:'🎞️',x:22,y:202},
+{id:'dreams',label:'Dreams of Dali: 360',icon:'🎥',x:22,y:294},
+{id:'stoken',label:'Quest for stoken',icon:'🪙',x:22,y:386}
+];
+function createIconEl(item){const el=document.createElement('div'); el.className='deskIcon'; el.dataset.id=item.id; el.style.left=item.x+'px'; el.style.top=item.y+'px'; el.innerHTML=`<div class="icoBox">${item.icon}</div><div class="lbl">${item.label}</div>`; el.addEventListener('click',e=>{e.stopPropagation();document.querySelectorAll('.deskIcon').forEach(i=>i.classList.remove('isSelected'));el.classList.add('isSelected');}); el.addEventListener('dblclick',e=>{e.stopPropagation();openApp(item.id);}); return el;}
+function renderIcons(){iconsLayer.innerHTML='';ICONS.forEach(i=>iconsLayer.appendChild(createIconEl(i)));}
+renderIcons(); document.addEventListener('click',()=>document.querySelectorAll('.deskIcon').forEach(i=>i.classList.remove('isSelected')));
+
+function toggleStart(force){startMenu.classList.toggle('on', typeof force==='boolean'?force:!startMenu.classList.contains('on'));}
+startBtn.addEventListener('click',e=>{e.stopPropagation();toggleStart();});
+document.addEventListener('mousedown',e=>{if(startMenu.classList.contains('on')&&!startMenu.contains(e.target)&&!startBtn.contains(e.target)) toggleStart(false);});
+startMenu.addEventListener('click',e=>{
+  const it=e.target.closest('.menuItem'); if(!it||it.classList.contains('hasSub')) return;
+  if(it.dataset.action==='shutdown'){toggleStart(false); os.classList.remove('osReady'); intro.style.display='flex'; cta.style.display='block'; return;}
+  if(it.dataset.external==='1'){window.open(it.dataset.link,'_blank','noopener'); toggleStart(false); return;}
+  if(it.dataset.link){
+    const id='link_'+btoa(it.dataset.link).replace(/=/g,''); ITEMS[id]={title:it.textContent.trim(),icon:'🌐',type:'web',url:it.dataset.link}; openApp(id); toggleStart(false); return;
+  }
+  if(it.dataset.open){ openApp(it.dataset.open); toggleStart(false); }
+});
+
+function hideNoise(){
+  [...document.querySelectorAll('a,button,div')].forEach(el=>{const t=(el.textContent||'').toLowerCase(); const h=(el.getAttribute('href')||'').toLowerCase(); if(t.includes('triunvirato')||h.includes('instagram.com/triunvirato')) el.style.display='none'; if(t.includes('odoo')&&t.includes('error de cliente')) el.style.display='none'; if(t.includes('cookies')) el.style.display='none';});
+}
+setInterval(hideNoise,1000);
+
+openApp('documents');
+window.KEANU_OPEN=(id)=>openApp(id);
+</script>
+</body>
+</html>
